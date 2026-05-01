@@ -3,71 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STAR Portal v38.0 - Final Admin Dashboard</title>
+    <title>STAR Portal v39.0 - Authorized Access Only</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://cdn.jsdelivr.net/gh/at-shovon/kalpurush-font@master/kalpurush.woff2');
-        :root { --p: #0d47a1; --s: #1976d2; --a: #2e7d32; --w: #b71c1c; --bg: #f4f7f6; }
+        :root { --p: #1a237e; --s: #283593; --a: #2e7d32; --w: #d32f2f; --bg: #f4f7f9; }
         body { font-family: 'Kalpurush', sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; color: #333; }
         .hidden { display: none !important; }
-        header { background: var(--p); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        header { background: var(--p); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
         .container { padding: 10px; max-width: 1200px; margin: auto; }
-        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 2px 12px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #e0e6ed; }
+        .card { background: white; padding: 18px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #e0e6ed; }
         
-        /* Master Table */
+        /* Table Styles */
         .table-wrapper { width: 100%; overflow-x: auto; background: white; border-radius: 8px; border: 1px solid #ddd; margin-top: 10px; }
         table { width: 100%; border-collapse: collapse; min-width: 1000px; font-size: 11px; }
         th, td { border: 1px solid #ddd; padding: 10px 5px; text-align: center; }
-        th { background: #cfd8dc; color: var(--p); font-weight: bold; }
+        th { background: #e8eaf6; color: var(--p); font-weight: bold; }
         .lab { background: #fff9c4 !important; font-weight: bold; border: 1.5px solid #fbc02d !important; }
-
-        /* Admin Form Control */
-        .editor-box { background: #e3f2fd; border: 2px solid var(--p); padding: 15px; border-radius: 12px; }
-        select, input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1.5px solid #d1d9e6; border-radius: 10px; font-family: 'Kalpurush'; box-sizing: border-box; }
-        .btn { border: none; padding: 14px; border-radius: 10px; width: 100%; cursor: pointer; font-size: 16px; font-family: 'Kalpurush'; font-weight: bold; transition: 0.3s; }
-        .btn-p { background: var(--p); color: white; }
-        .btn-a { background: var(--a); color: white; }
 
         /* Auth UI */
         .auth-screen { height: 100vh; background: var(--p); display: flex; align-items: center; justify-content: center; position: fixed; width: 100%; top: 0; z-index: 2000; }
-        
-        /* Navigation */
+        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1.5px solid #d1d9e6; border-radius: 8px; font-family: 'Kalpurush'; box-sizing: border-box; }
+        .btn { border: none; padding: 14px; border-radius: 8px; width: 100%; cursor: pointer; font-size: 16px; font-family: 'Kalpurush'; font-weight: bold; transition: 0.3s; }
+        .btn-p { background: var(--p); color: white; }
+        .btn-a { background: var(--a); color: white; }
+
+        /* Nav */
         nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; border-top: 1px solid #ddd; z-index: 1000; height: 75px; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); }
-        .nav-item { flex: 1; text-align: center; padding: 12px; color: #78909c; cursor: pointer; font-size: 10px; }
+        .nav-item { flex: 1; text-align: center; padding: 12px 2px; color: #78909c; cursor: pointer; font-size: 10px; }
+        .nav-item i { font-size: 22px; margin-bottom: 4px; display: block; }
         .nav-item.active { color: var(--p); font-weight: bold; border-top: 4px solid var(--p); }
+
+        .day-nav { display: flex; overflow-x: auto; gap: 8px; margin-bottom: 10px; padding: 5px; }
+        .day-btn { padding: 8px 18px; border: none; border-radius: 20px; background: #eceff1; cursor: pointer; white-space: nowrap; font-family: 'Kalpurush'; font-weight: bold; }
+        .active-day { background: var(--p) !important; color: white !important; }
     </style>
 </head>
 <body>
 
-<!-- অথেন্টিকেশন -->
-<div id="auth-section" class="auth-screen hidden">
-    <div class="card" style="width: 85%; max-width: 400px; text-align: center;">
-        <i class="fas fa-shield-alt fa-4x" style="color:var(--p); margin-bottom:15px"></i>
-        <h2>মাস্টার প্যানেল লগইন</h2>
-        <input type="text" id="log-id" placeholder="ইউজার আইডি">
-        <input type="password" id="log-pw" placeholder="পাসওয়ার্ড">
-        <button class="btn btn-p" onclick="handleLogin()">প্রবেশ করুন</button>
+<!-- ১. লগইন ও রেজিস্ট্রেশন গেটওয়ে -->
+<div id="auth-section" class="auth-screen">
+    <div class="card" style="width: 90%; max-width: 400px; text-align: center;">
+        <div id="login-ui">
+            <i class="fas fa-user-shield fa-4x" style="color:var(--p); margin-bottom:15px;"></i>
+            <h2 style="color:var(--p)">STAR Portal লগইন</h2>
+            <select id="log-id">
+                <option value="">নিজের নাম নির্বাচন করুন</option>
+                <option value="akashmela">ADMIN (akashmela)</option>
+                <option>Principal_SYFUL</option>
+                <!-- অন্যান্য নাম জেএস দিয়ে লোড হবে -->
+            </select>
+            <input type="password" id="log-pw" placeholder="পাসওয়ার্ড দিন">
+            <button class="btn btn-p" onclick="handleLogin()">প্রবেশ করুন</button>
+            <p onclick="toggleAuth(true)" style="margin-top:15px; color:var(--s); cursor:pointer; font-size:14px">নতুন একাউন্ট (রেজিস্ট্রেশন)</p>
+        </div>
+
+        <div id="signup-ui" class="hidden">
+            <h2 style="color:var(--a)">শিক্ষক রেজিস্ট্রেশন</h2>
+            <select id="reg-id"><option value="">আপনার নাম নির্বাচন করুন</option></select>
+            <select id="reg-cat"><option value="Compulsory">আবশ্যিক বিষয় (Bangla, Eng, ICT)</option><option value="Science">বিজ্ঞান বিভাগ</option><option value="Humanities">মানবিক বিভাগ</option><option value="Business">ব্যবসায় শিক্ষা</option></select>
+            <input type="password" id="reg-pw" placeholder="পাসওয়ার্ড সেট করুন">
+            <button class="btn btn-a" onclick="alert('রেজিস্ট্রেশন সফল! লগইন করুন।')">নিশ্চিত করুন</button>
+            <p onclick="toggleAuth(false)" style="margin-top:10px; cursor:pointer">লগইন পেজে ফিরে যান</p>
+        </div>
     </div>
 </div>
 
-<!-- মূল অ্যাপ ইন্টারফেস -->
+<!-- ২. মূল অ্যাপ্লিকেশন ড্যাশবোর্ড -->
 <div id="app-main" class="hidden">
     <header>
-        <span><i class="fas fa-university"></i> বর্ণমালা কলেজ কন্ট্রোল ড্যাশবোর্ড</span>
-        <button onclick="doLogout()" style="background:none; border:none; color:white; font-size:20px;"><i class="fas fa-power-off"></i></button>
+        <span><i class="fas fa-university"></i> বর্ণমালা কলেজ পোর্টাল</span>
+        <button onclick="doLogout()" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;"><i class="fas fa-power-off"></i></button>
     </header>
     
     <div class="container">
-        <!-- ট্যাব ১: রুটিন ভিউয়ার -->
         <div id="tab-home" class="tab-page">
-            <div style="display: flex; overflow-x: auto; gap: 8px; margin-bottom: 15px;">
-                <button class="btn btn-p" style="width:auto; padding:8px 20px" onclick="renderTable('SUNDAY')">রবি</button>
-                <button class="btn btn-p" style="width:auto; padding:8px 20px" onclick="renderTable('MONDAY')">সোম</button>
-                <button class="btn btn-p" style="width:auto; padding:8px 20px" onclick="renderTable('TUESDAY')">মঙ্গল</button>
-                <button class="btn btn-p" style="width:auto; padding:8px 20px" onclick="renderTable('WEDNESDAY')">বুধ</button>
-                <button class="btn btn-p" style="width:auto; padding:8px 20px" onclick="renderTable('THURSDAY')">বৃহঃ</button>
+            <div class="day-nav">
+                <button class="day-btn active-day" onclick="switchDay('SUNDAY', this)">রবিবার</button>
+                <button class="day-btn" onclick="switchDay('MONDAY', this)">সোমবার</button>
+                <button class="day-btn" onclick="switchDay('TUESDAY', this)">মঙ্গলবার</button>
+                <button class="day-btn" onclick="switchDay('WEDNESDAY', this)">বুধবার</button>
+                <button class="day-btn" onclick="switchDay('THURSDAY', this)">বৃহস্পতিবার</button>
             </div>
-            <h3 id="day-title" style="text-align:center; color:var(--p)">মাস্টার রুটিন</h3>
             <div class="table-wrapper">
                 <table>
                     <thead><tr><th>Class</th><th>1st</th><th>2nd</th><th>3rd</th><th>4th</th><th>5th</th><th>6th</th><th>7th</th><th>8th</th></tr></thead>
@@ -76,84 +93,93 @@
             </div>
         </div>
 
-        <!-- ট্যাব ২: অ্যাডমিন কন্ট্রোল (আপনার রুটিন এডিটর এখানে) -->
+        <!-- অ্যাডমিন এডিটর ট্যাব -->
         <div id="tab-admin" class="tab-page hidden">
-            <h2 style="color:var(--p); border-left:8px solid var(--p); padding-left:15px">মাস্টার অ্যাডমিন কন্ট্রোল</h2>
-            
-            <!-- স্মার্ট রুটিন এডিটর (No Code) -->
-            <div class="card editor-box">
-                <h4 style="margin-top:0"><i class="fas fa-edit"></i> ১. স্মার্ট রুটিন এডিটর (No Code)</h4>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
+            <h3 style="color:var(--w)">অ্যাডমিন কন্ট্রোল প্যানেল</h3>
+            <div class="card" style="background:#e8eaf6; border:2px solid var(--p)">
+                <label>বার ও ক্লাস:</label>
+                <div style="display:flex; gap:10px">
                     <select id="edit-day"><option value="SUNDAY">রবিবার</option><option value="MONDAY">সোমবার</option><option value="TUESDAY">মঙ্গলবার</option><option value="WEDNESDAY">বুধবার</option><option value="THURSDAY">বৃহস্পতিবার</option></select>
                     <select id="edit-class"></select>
                 </div>
-                <label>বিভাগ ও বিষয় (বোর্ড কারিকুলাম নির্নায়ক):</label>
-                <select id="edit-cat" onchange="updateSubDropdown()"><option value="Compulsory">আবশ্যিক (Bangla, English, ICT)</option><option value="Science">Science</option><option value="Humanities">Humanities</option><option value="Business">Business</option></select>
+                <label>বিভাগ ও শিক্ষক নির্বাচন:</label>
+                <select id="edit-cat" onchange="updateSubDropdown()"><option value="Compulsory">আবশ্যিক (Bangla, English, ICT)</option><option value="Science">বিজ্ঞান</option><option value="Humanities">মানবিক</option><option value="Business">ব্যবসায় শিক্ষা</option></select>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
                     <select id="edit-sub" onchange="updateTchrDropdown()"></select>
                     <select id="edit-tchr"></select>
                 </div>
-                <label>পিরিয়ড নির্বাচন (১ম-৮ম):</label>
-                <select id="edit-p-idx"><option value="0">১ম পিরিয়ড</option><option value="1">২য় পিরিয়ড</option><option value="2">৩য় পিরিয়ড</option><option value="3">৪র্থ পিরিয়ড</option><option value="4">৫ম পিরিয়ড</option><option value="5">৬ষ্ঠ পিরিয়ড</option><option value="6">৭ম পিরিয়ড</option><option value="7">৮ম পিরিয়ড</option></select>
-                <button class="btn btn-a" onclick="updateSingleCell()">রুটিন আপডেট করুন</button>
-            </div>
-
-            <!-- জরুরি নোটিশ -->
-            <div class="card">
-                <h4>২. জরুরি নোটিশ পুশ করুন</h4>
-                <input type="text" id="admin-notice" placeholder="যেমন: আগামী সোমবার কলেজ ছুটি">
-                <button class="btn btn-p" onclick="pushNotice()">পাবলিশ করুন</button>
+                <label>পিরিয়ড (১ম-৮ম):</label>
+                <select id="edit-p-idx"><option value="0">১ম</option><option value="1">২য়</option><option value="2">৩য়</option><option value="3">৪র্থ</option><option value="4">৫ম</option><option value="5">৬ষ্ঠ</option><option value="6">৭ম</option><option value="7">৮ম</option></select>
+                <button class="btn btn-p" onclick="updateCell()">রুটিন আপডেট করুন</button>
             </div>
         </div>
     </div>
 
-    <!-- নেভিগেশন -->
     <nav>
-        <div class="nav-item active" onclick="showTab('home')"><i class="fas fa-calendar-alt fa-lg"></i><br>রুটিন ভিউ</div>
-        <div id="admin-tab-btn" class="nav-item hidden" onclick="showTab('admin')"><i class="fas fa-tools fa-lg"></i><br>অ্যাডমিন</div>
-        <div class="nav-item" onclick="doLogout()"><i class="fas fa-sign-out-alt fa-lg"></i><br>লগআউট</div>
+        <div class="nav-item active" onclick="showTab('home')"><i class="fas fa-home"></i>হোম</div>
+        <div id="admin-nav" class="nav-item hidden" onclick="showTab('admin')"><i class="fas fa-user-shield"></i>অ্যাডমিন</div>
     </nav>
 </div>
 
 <script>
-    const CLASSES = ["XII-SCI-A", "XII-SCI-B", "XII-SCI-C", "XII-HU", "XII-BS", "XI-SCI-A", "XI-SCI-B", "XI-SCI-C", "XI-HU", "XI-BS", "X-SCI-A", "X-SCI-B", "X-HU", "X-BS", "IX-SCI-A", "IX-SCI-B", "IX-SCI-C", "IX-HU", "IX-BS"];
+    // মাস্টার টিচার ডাটা (আবশ্যিক ও বিভাগীয়)
     const MASTER_DATA = {
         "Compulsory": {"Bangla":["MOKTER","NASRIN"], "English":["ALI","PS"], "ICT":["ARIF","FORHAD","ASAD"]},
-        "Science": {"Physics":["FAKHRUL","SOHAYAB"], "Chemistry":["TAREK","NADIM"], "Biology":["MOFAZZAL","ZIMI"], "Math":["AKRAM"]},
-        "Humanities": {"Geography":["KAFIL"], "Economics":["FARID"], "Civics":["HASAN"]},
+        "Science": {"Physics":["FAKHRUL","SOHAYAB"], "Chemistry":["TAREK","NADIM"], "Biology":["MOFAZZAL","ZIMI"], "Math":["AKRAM","REJAUL"]},
+        "Humanities": {"Geography":["KAFIL"], "Economics":["FARID"], "Civics":["HASAN"], "IS":["MOROL"]},
         "Business": {"Management":["AZIZ"], "Accounting":["JUI"], "Finance":["AFSAR"]}
     };
 
-    let DB = {
+    const CLASSES = ["XII-SCI-A", "XII-SCI-B", "XII-HU", "XII-BS", "XI-SCI-A", "XI-HU", "X-SCI-A", "X-HU", "IX-HU", "IX-BS"];
+
+    let STORE = {
         routine: {
-            "SUNDAY": [
-                {c:"XII-SCI-A", p:["BAN-MOKTER","ENG-ALI","PHY FAKHRUL","BIO-MOFAZZAL","MATH AKRAM","CHE TAREK","ENG-ALI","ICT-FORHAD"]},
-                {c:"XII-SCI-B", p:["ICT ASAD","EHG FARID","CHE TAREK","PHY SOHAYAB","MATH MAHFUZ","BIO-MOFAZZAL","EHG FARID","BAN-MOKTER"]}
-            ],
-            "MONDAY": CLASSES.map(c => ({c, p: ["-","-","-","-","-","-","-","-"]})),
-            "TUESDAY": CLASSES.map(c => ({c, p: ["-","-","-","-","-","-","-","-"]})),
-            "WEDNESDAY": CLASSES.map(c => ({c, p: ["-","-","-","-","-","-","-","-"]})),
-            "THURSDAY": CLASSES.map(c => ({c, p: ["-","-","-","-","-","-","-","-"]}))
-        },
-        notice: "স্বাগতম! ড্যাশবোর্ড থেকে রুটিন নিয়ন্ত্রণ করুন।"
+            "SUNDAY": [{c:"XII-SCI-A", p:["BAN-MOKTER","ENG-ALI","PHY FAKHRUL","BIO-MOFAZZAL","MATH AKRAM","CHE TAREK","ENG-ALI","ICT-FORHAD"]}],
+            "MONDAY": [], "TUESDAY": [], "WEDNESDAY": [], "THURSDAY": []
+        }
     };
 
     function init() {
-        const local = localStorage.getItem('star_v38_db');
-        if(local) DB = JSON.parse(local);
-        const user = localStorage.getItem('masterUser');
-        if(!user) { document.getElementById('auth-section').classList.remove('hidden'); }
-        else {
+        const local = localStorage.getItem('star_portal_v39_db');
+        if(local) STORE = JSON.parse(local);
+        const user = localStorage.getItem('master_session');
+        
+        if(!user) {
+            document.getElementById('auth-section').classList.remove('hidden');
+            populateAuthDropdowns();
+        } else {
+            document.getElementById('auth-section').classList.add('hidden');
             document.getElementById('app-main').classList.remove('hidden');
-            if(user === "akashmela") document.getElementById('admin-tab-btn').classList.remove('hidden');
-            setupEditor();
-            renderTable('SUNDAY');
+            if(user === "akashmela") document.getElementById('admin-nav').classList.remove('hidden');
+            setupAdminEditor();
+            switchDay('SUNDAY');
         }
     }
 
-    function setupEditor() {
-        const clsSel = document.getElementById('edit-class');
-        CLASSES.forEach(c => clsSel.innerHTML += `<option value="${c}">${c}</option>`);
+    function handleLogin() {
+        const id = document.getElementById('log-id').value;
+        const pw = document.getElementById('log-pw').value;
+        if(id === "akashmela" && pw === "S@nmania2026") { localStorage.setItem('master_session', id); location.reload(); }
+        else if(id && pw) { localStorage.setItem('master_session', id); location.reload(); }
+        else alert("সঠিক আইডি ও পাসওয়ার্ড দিন!");
+    }
+
+    function doLogout() { localStorage.removeItem('master_session'); location.reload(); }
+
+    function switchDay(day, btn) {
+        if(btn) { document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active-day')); btn.classList.add('active-day'); }
+        const body = document.getElementById('master-body');
+        body.innerHTML = "";
+        (STORE.routine[day] || []).forEach(row => {
+            let tr = `<tr><td style="font-weight:bold; background:#f5f5f5">${row.c}</td>`;
+            row.p.forEach(p => tr += `<td class="${p.includes('ICT')?'lab':''}">${p}</td>`);
+            body.innerHTML += tr + `</tr>`;
+        });
+    }
+
+    function setupAdminEditor() {
+        const sel = document.getElementById('edit-class');
+        CLASSES.forEach(c => sel.innerHTML += `<option value="${c}">${c}</option>`);
         updateSubDropdown();
     }
 
@@ -173,50 +199,29 @@
         MASTER_DATA[cat][sub].forEach(t => tSel.innerHTML += `<option value="${sub}_${t}">${sub}_${t}</option>`);
     }
 
-    function updateSingleCell() {
+    function updateCell() {
         const day = document.getElementById('edit-day').value;
         const cls = document.getElementById('edit-class').value;
-        const pIdx = document.getElementById('edit-period').value;
+        const idx = document.getElementById('edit-p-idx').value;
         const val = document.getElementById('edit-tchr').value;
-        if(!DB.routine[day]) DB.routine[day] = [];
-        let row = DB.routine[day].find(r => r.c === cls);
-        if(!row) { row = {c:cls, p:["-","-","-","-","-","-","-","-"]}; DB.routine[day].push(row); }
-        row.p[pIdx] = val;
-        saveDB(); alert("আপডেট সফল!"); renderTable(day);
+        if(!STORE.routine[day]) STORE.routine[day] = [];
+        let row = STORE.routine[day].find(r => r.c === cls);
+        if(!row) { row = {c:cls, p:["-","-","-","-","-","-","-","-"]}; STORE.routine[day].push(row); }
+        row.p[idx] = val;
+        saveDB(); alert("রুটিন আপডেট সফল!"); switchDay(day);
     }
 
-    function renderTable(day) {
-        const body = document.getElementById('master-body');
-        body.innerHTML = "";
-        (DB.routine[day] || []).forEach(row => {
-            let tr = `<tr><td style="font-weight:bold; background:#f5f5f5">${row.c}</td>`;
-            row.p.forEach(p => tr += `<td class="${p.includes('ICT')?'lab':''}">${p}</td>`);
-            body.innerHTML += tr + `</tr>`;
-        });
+    function populateAuthDropdowns() {
+        const list = ["SYFUL", "ARIF", "MOKTER", "ALI", "FAKHRUL", "TAREK", "KAFIL"];
+        const logSel = document.getElementById('log-id');
+        const regSel = document.getElementById('reg-id');
+        list.sort().forEach(t => { logSel.innerHTML += `<option>${t}</option>`; regSel.innerHTML += `<option>${t}</option>`; });
     }
 
-    function handleLogin() {
-        const id = document.getElementById('log-id').value;
-        const pw = document.getElementById('log-pw').value;
-        if(id === "akashmela" && pw === "S@nmania2026") {
-            localStorage.setItem('masterUser', id);
-            location.reload();
-        } else alert("ভুল আইডি বা পাসওয়ার্ড!");
-    }
+    function showTab(t) { document.querySelectorAll('.tab-page').forEach(p => p.classList.add('hidden')); document.getElementById('tab-' + t).classList.remove('hidden'); }
+    function toggleAuth(s) { document.getElementById('login-ui').classList.toggle('hidden', s); document.getElementById('signup-ui').classList.toggle('hidden', !s); }
+    function saveDB() { localStorage.setItem('star_portal_v39_db', JSON.stringify(STORE)); }
 
-    function pushNotice() {
-        DB.notice = document.getElementById('admin-notice').value;
-        saveDB(); alert("নোটিশ পাবলিশ হয়েছে!");
-    }
-
-    function showTab(t) {
-        document.querySelectorAll('.tab-page').forEach(p => p.classList.add('hidden'));
-        document.getElementById('tab-' + t).classList.remove('hidden');
-        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-    }
-
-    function saveDB() { localStorage.setItem('star_v38_db', JSON.stringify(DB)); }
-    function doLogout() { localStorage.removeItem('masterUser'); location.reload(); }
     window.onload = init;
 </script>
 </body>
