@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAR Portal v21.0 - Supabase Connected</title>
+    <!-- সুপাবেস লাইব্রেরি লোড -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/at-shovon/kalpurush-font@master/kalpurush.woff2');
+        :root { --p: #1a237e; --bg: #f8f9fa; }
+        body { font-family: 'Kalpurush', sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; }
+        header { background: var(--p); color: white; padding: 15px; text-align: center; }
+        .container { padding: 15px; max-width: 1200px; margin: auto; }
+        .table-wrapper { width: 100%; overflow-x: auto; background: white; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; font-size: 11px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+        th { background: #e8eaf6; color: var(--p); }
+        .lab { background: #fff9c4 !important; font-weight: bold; }
+        nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; border-top: 1px solid #ddd; height: 75px; }
+        .nav-item { flex: 1; text-align: center; padding: 12px; color: #777; cursor: pointer; font-size: 11px; }
+        .nav-item.active { color: var(--p); font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<header>বর্ণমালা কলেজ ডিজিটাল ড্যাশবোর্ড</header>
+
+<div class="container">
+    <div style="display: flex; gap: 5px; margin-bottom: 10px; overflow-x: auto;">
+        <button class="nav-item" onclick="loadDay('SUNDAY')">রবিবার</button>
+        <button class="nav-item" onclick="loadDay('MONDAY')">সোমবার</button>
+        <button class="nav-item" onclick="loadDay('TUESDAY')">মঙ্গলবার</button>
+        <button class="nav-item" onclick="loadDay('WEDNESDAY')">বুধবার</button>
+        <button class="nav-item" onclick="loadDay('THURSDAY')">বৃহস্পতিবার</button>
+    </div>
+
+    <div class="table-wrapper">
+        <table>
+            <thead><tr><th>Class</th><th>1st</th><th>2nd</th><th>3rd</th><th>4th</th><th>5th</th><th>6th</th><th>7th</th><th>8th</th></tr></thead>
+            <tbody id="routine-body"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // আপনার সুপাবেস কানেকশন কি
+    const SUPABASE_URL = 'https://eskdlglgeeuovugcffszs.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVza2RsZ2xnZWV1dnVnY2Zmc3pzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2Mzg3NjAsImV4cCI6MjA5MzIxNDc2MH0.QUNLFHjgGVdTfKN4JYCf8X9X2wCvbnRkMD6J8zjmIQk';
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let MASTER_ROUTINE = {};
+
+    async function syncData() {
+        const { data, error } = await supabase.from('routine_master').select('*');
+        if (error) {
+            console.error('Data Sync Error:', error);
+            alert("ডাটা লোড হতে সমস্যা হচ্ছে!");
+        } else {
+            data.forEach(row => {
+                MASTER_ROUTINE[row.day_name] = row.full_routine;
+            });
+            loadDay('SUNDAY'); // ডিফল্ট রবিবার দেখাবে
+        }
+    }
+
+    function loadDay(day) {
+        const body = document.getElementById('routine-body');
+        body.innerHTML = "";
+        const rows = MASTER_ROUTINE[day] || [];
+        
+        rows.forEach(row => {
+            let tr = `<tr><td style="font-weight:bold; background:#f5f5f5">${row.c}</td>`;
+            row.p.forEach(p => {
+                let hClass = p.includes("ICT LAB") ? "lab" : "";
+                tr += `<td class="${hClass}">${p}</td>`;
+            });
+            body.innerHTML += tr + `</tr>`;
+        });
+    }
+
+    window.onload = syncData;
+</script>
+</body>
+</html>
