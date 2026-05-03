@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STAR Portal v64 - Secure Institutional ERP</title>
+    <title>STAR Portal v75 - Barnamala College Digital ERP</title>
     
-    <!-- External Libraries -->
+    <!-- AI OCR, Cropper, PDF, FontAwesome -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -14,129 +14,145 @@
     
     <style>
         @import url('https://cdn.jsdelivr.net/gh/at-shovon/kalpurush-font@master/kalpurush.woff2');
-        :root { --p: #1a237e; --s: #3949ab; --a: #2e7d32; --w: #d32f2f; --bg: #f4f7f9; }
-        body { font-family: 'Kalpurush', sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; color: #333; }
+        :root { --p: #1a237e; --s: #283593; --a: #2e7d32; --w: #d32f2f; --bg: #f4f7f9; }
+        body { font-family: 'Kalpurush', sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; color: #333; overflow-x: hidden; }
         .hidden { display: none !important; }
-        header { background: var(--p); color: white; padding: 18px; text-align: center; font-size: 22px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); position: sticky; top: 0; z-index: 1000; }
+        
+        /* বৃত্তাকার লোগো ইঞ্জিনিয়ারিং */
+        .circle-logo { width: 110px; height: 110px; border-radius: 50%; border: 4px solid var(--p); object-fit: cover; background: #fff; margin: 0 auto 15px; display: block; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .header-logo { width: 42px; height: 42px; border-radius: 50%; border: 2px solid #fff; object-fit: cover; background: #fff; margin-right: 12px; }
+
+        header { background: var(--p); color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
         .container { padding: 15px; max-width: 1400px; margin: auto; }
-        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #e0e6ed; }
+        .card { background: white; padding: 22px; border-radius: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); margin-bottom: 15px; border: 1px solid #e0e6ed; }
 
         /* Rich Editor */
-        #q-editor { min-height: 400px; border: 2px solid #d1d9e6; border-radius: 12px; padding: 20px; background: white; outline: none; overflow-y: auto; line-height: 1.8; font-size: 18px; }
+        #q-editor { min-height: 400px; border: 2px solid #d1d9e6; border-radius: 12px; padding: 25px; background: white; outline: none; overflow-y: auto; line-height: 1.8; font-size: 19px; }
         #q-editor img { max-width: 100%; border-radius: 5px; margin: 15px 0; display: block; border: 1px solid #ddd; }
 
-        /* Table */
-        .table-wrapper { width: 100%; overflow-x: auto; background: white; border-radius: 10px; border: 1px solid #ddd; margin-top: 10px; }
+        /* Table Design */
+        .table-wrapper { width: 100%; overflow-x: auto; background: white; border-radius: 12px; border: 1px solid #ddd; margin-top: 10px; }
         table { width: 100%; border-collapse: collapse; min-width: 1100px; font-size: 11px; }
         th, td { border: 1px solid #eee; padding: 12px 6px; text-align: center; }
         th { background: #e8eaf6; color: var(--p); font-weight: bold; position: sticky; top: 0; }
         .lab { background: #fff9c4 !important; font-weight: bold; border: 1.5px solid #fbc02d !important; }
+        .class-col { font-weight: bold; background: #f1f3f4 !important; color: #333; width: 100px; }
 
-        /* Auth UI */
-        .auth-screen { height: 100vh; background: var(--p); display: flex; align-items: center; justify-content: center; position: fixed; width: 100%; top: 0; z-index: 5000; }
-        select, input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1.5px solid #d1d9e6; border-radius: 10px; font-family: 'Kalpurush'; box-sizing: border-box; font-size: 15px; }
-        .btn { border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-family: 'Kalpurush'; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; font-size: 14px; }
-        .btn-p { background: var(--p); color: white; }
-        .btn-a { background: var(--a); color: white; }
-        .btn-w { background: var(--w); color: white; }
-
-        /* Nav */
+        /* Navigation */
         nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; border-top: 1px solid #ddd; z-index: 1000; height: 75px; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); }
-        .nav-item { flex: 1; text-align: center; padding: 12px; color: #78909c; cursor: pointer; font-size: 10px; }
+        .nav-item { flex: 1; text-align: center; padding: 12px 2px; color: #78909c; cursor: pointer; font-size: 10px; }
         .nav-item.active { color: var(--p); font-weight: bold; border-top: 4px solid var(--p); }
 
-        .shadow-banner { background: #ffeb3b; padding: 10px; text-align: center; font-weight: bold; position: sticky; top: 60px; z-index: 999; border-bottom: 2px solid #fbc02d; font-size: 13px; }
-        .user-row { display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; }
+        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1.5px solid #d1d9e6; border-radius: 10px; font-family: 'Kalpurush'; box-sizing: border-box; font-size: 15px; }
+        .btn { border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-family: 'Kalpurush'; font-weight: bold; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; font-size: 14px; }
+        .btn-p { background: var(--p); color: white; }
+        .btn-a { background: var(--a); color: white; }
+        
+        .day-btn { padding: 10px 20px; border: none; border-radius: 25px; background: #eceff1; cursor: pointer; white-space: nowrap; font-weight: bold; }
+        .active-day { background: var(--p) !important; color: white !important; }
+
+        .shadow-banner { background: #ffeb3b; padding: 10px; text-align: center; font-weight: bold; position: sticky; top: 65px; z-index: 999; border-bottom: 2px solid #fbc02d; font-size: 13px; }
         #preview-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 7000; display: none; flex-direction: column; align-items: center; justify-content: center; }
-        .paper { background: white; width: 95%; max-width: 800px; height: 90vh; overflow-y: auto; padding: 50px; border-radius: 10px; font-family: serif; position: relative; }
+        .paper { background: white; width: 95%; max-width: 850px; height: 90vh; overflow-y: auto; padding: 50px; border-radius: 10px; font-family: serif; }
+        .auth-screen { height: 100vh; background: var(--p); display: flex; align-items: center; justify-content: center; position: fixed; width: 100%; top: 0; z-index: 5000; }
+        .user-row { display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; transition: 0.2s; }
+        .user-row:hover { background: #e3f2fd; }
     </style>
 </head>
 <body>
 
 <!-- শ্যাডো ব্যানার -->
 <div id="shadow-banner" class="shadow-banner hidden">
-    <i class="fas fa-user-secret"></i> শ্যাডো মোড: <span id="shadow-name"></span> এর ডাটা দেখছেন। 
+    <i class="fas fa-user-secret"></i> আপনি বর্তমানে <span id="shadow-name"></span> এর প্রোফাইল দেখছেন। 
     <button onclick="exitShadow()" style="padding:2px 8px; background:black; color:white; border:none; border-radius:5px; margin-left:10px; cursor:pointer;">প্রস্থান</button>
 </div>
 
-<!-- ১. লগইন -->
+<!-- ১. লগইন ও রেজিস্ট্রেশন -->
 <div id="auth-section" class="auth-screen">
-    <div class="card" style="width: 90%; max-width: 420px; text-align: center;">
-        <i class="fas fa-university fa-4x" style="color:var(--p); margin-bottom:15px"></i>
-        <h2>বর্ণমালা কলেজ স্মার্ট পোর্টাল</h2>
-        <select id="log-id">
-            <option value="">নিজের পরিচয় নির্বাচন করুন</option>
-            <option value="akashmela">Master Admin (akashmela)</option>
-            <option value="SYFUL">Principal (SYFUL)</option>
-            <option value="Exam_Admin">Exam Admin (কমিটি)</option>
-        </select>
-        <input type="password" id="log-pw" placeholder="আপনার পাসওয়ার্ড">
-        <button class="btn btn-p" onclick="handleLogin()">প্রবেশ করুন</button>
+    <div class="card" style="width: 90%; max-width: 420px; text-align: center; border-radius: 25px;">
+        <img src="logo.png" onerror="this.src='https://i.ibb.co/VWVjK8L/logo.jpg'" class="circle-logo">
+        <h2 style="margin-top:0; color: var(--p);">বর্ণমালা কলেজ পোর্টাল</h2>
+        
+        <div id="login-ui">
+            <select id="log-id"><option value="">পরিচয় নির্বাচন করুন</option></select>
+            <input type="password" id="log-pw" placeholder="পাসওয়ার্ড দিন">
+            <button class="btn btn-p" onclick="handleLogin()">প্রবেশ করুন</button>
+            <p onclick="toggleAuth(true)" style="margin-top:20px; color:var(--s); cursor:pointer; font-weight:bold; text-decoration:underline;">নতুন একাউন্ট (রেজিস্ট্রেশন) করুন</p>
+        </div>
+
+        <div id="signup-ui" class="hidden">
+            <select id="reg-id"><option value="">তালিকা থেকে নিজেকে বেছে নিন</option></select>
+            <input type="password" id="reg-pw" placeholder="পাসওয়ার্ড সেট করুন">
+            <input type="email" id="reg-email" placeholder="জি-মেইল আইডি">
+            <button class="btn btn-a" onclick="alert('ভেরিফিকেশন ওটিপি সিমুলেশন সফল!')">রেজিস্ট্রেশন সম্পন্ন করুন</button>
+            <p onclick="toggleAuth(false)" style="margin-top:20px; color:var(--p); cursor:pointer; font-weight:bold;">লগইন পেজে ফিরে যান</p>
+        </div>
     </div>
 </div>
 
 <!-- ২. মূল অ্যাপ -->
 <div id="app-main" class="hidden">
-    <header>বর্ণমালা কলেজ কন্ট্রোল ড্যাশবোর্ড</header>
+    <header>
+        <div style="display:flex; align-items:center;">
+            <img src="logo.png" onerror="this.src='https://i.ibb.co/VWVjK8L/logo.jpg'" class="header-logo">
+            <span style="font-size: 16px;">বর্ণমালা কলেজ</span>
+        </div>
+        <button onclick="doLogout()" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;"><i class="fas fa-power-off"></i></button>
+    </header>
     
     <div class="container">
         <!-- ট্যাব ১: রুটিন -->
         <div id="tab-home" class="tab-page">
             <div style="display:flex; gap:10px; margin-bottom:15px;">
                 <button class="btn btn-p" onclick="toggleRoutine('all')">মাস্টার রুটিন</button>
-                <button class="btn btn-a" onclick="toggleRoutine('mine')">আমার পিরিয়ড</button>
+                <button class="btn btn-a" onclick="toggleRoutine('mine')">আমার পিরিয়ড</button>
             </div>
-            <div id="view-master" class="table-wrapper">
-                <div style="display:flex; overflow-x:auto; gap:5px; padding:10px; background:#fff">
-                    <button class="btn" style="width:auto; padding:5px 15px" onclick="drawTable('SUNDAY')">রবি</button>
-                    <button class="btn" style="width:auto; padding:5px 15px" onclick="drawTable('MONDAY')">সোম</button>
-                    <button class="btn" style="width:auto; padding:5px 15px" onclick="drawTable('TUESDAY')">মঙ্গল</button>
-                    <button class="btn" style="width:auto; padding:5px 15px" onclick="drawTable('WEDNESDAY')">বুধ</button>
-                    <button class="btn" style="width:auto; padding:5px 15px" onclick="drawTable('THURSDAY')">বৃহঃ</button>
+            
+            <div id="view-master">
+                <div style="display:flex; overflow-x:auto; gap:5px; padding:10px; background:#fff; border-radius:10px; margin-bottom:10px;">
+                    <button id="btn-SUNDAY" class="day-btn" onclick="drawTable('SUNDAY', this)">রবি</button>
+                    <button id="btn-MONDAY" class="day-btn" onclick="drawTable('MONDAY', this)">সোম</button>
+                    <button id="btn-TUESDAY" class="day-btn" onclick="drawTable('TUESDAY', this)">মঙ্গল</button>
+                    <button id="btn-WEDNESDAY" class="day-btn" onclick="drawTable('WEDNESDAY', this)">বুধ</button>
+                    <button id="btn-THURSDAY" class="day-btn" onclick="drawTable('THURSDAY', this)">বৃহঃ</button>
                 </div>
-                <table>
-                    <thead><tr><th>Class</th><th>1st</th><th>2nd</th><th>3rd</th><th>4th</th><th>5th</th><th>6th</th><th>7th</th><th>8th</th></tr></thead>
-                    <tbody id="master-body"></tbody>
-                </table>
+                <div class="table-wrapper"><table><thead><tr><th>Class</th><th>1st</th><th>2nd</th><th>3rd</th><th>4th</th><th>5th</th><th>6th</th><th>7th</th><th>8th</th></tr></thead><tbody id="master-body"></tbody></table></div>
             </div>
-            <div id="view-mine" class="hidden"><div id="mine-schedule" style="font-size:18px; text-align:center; color:var(--a); font-weight:bold;"></div><div id="mine-list"></div></div>
+            <div id="view-mine" class="hidden"><div id="mine-alert" style="background:#e8f5e9; color:#2e7d32; padding:15px; border-radius:10px; text-align:center; font-weight:bold; font-size:18px; margin-bottom:15px;"></div><div id="mine-schedule"></div></div>
         </div>
 
         <!-- ট্যাব ২: প্রশ্ন মেকার -->
         <div id="tab-qmaker" class="tab-page hidden">
             <h3>প্রশ্ন ও উদ্দীপক মেকার</h3>
             <div class="card">
-                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:15px;">
+                <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:15px;">
                     <button class="btn btn-p" onclick="document.getElementById('file-in').click()"><i class="fas fa-camera"></i> স্ক্যান</button>
                     <button class="btn btn-a" onclick="showPreview()"><i class="fas fa-eye"></i> প্রিভিউ</button>
                     <button class="btn btn-p" style="background:var(--s)" onclick="saveDraft()"><i class="fas fa-save"></i> সেভ</button>
                 </div>
                 <input type="file" id="file-in" accept="image/*" class="hidden" onchange="initOCR(event)">
                 <div id="q-editor" contenteditable="true" placeholder="এখানে প্রশ্ন সাজান..."></div>
-                <button class="btn btn-w" style="margin-top:15px" onclick="submitToAdmin()"><i class="fas fa-paper-plane"></i> Submit to Exam Admin</button>
+                <button class="btn btn-p" style="margin-top:15px" onclick="alert('কমিটির কাছে পাঠানো হয়েছে।')">Submit to Exam Admin</button>
             </div>
         </div>
 
         <!-- ট্যাব ৩: অ্যাডমিন কন্ট্রোল -->
         <div id="tab-admin" class="tab-page hidden">
-            <h3 style="color:var(--w)"><i class="fas fa-user-shield"></i> অ্যাডমিন মাস্টার কন্ট্রোল</h3>
-            
-            <!-- রুটিন এডিটর -->
-            <div id="routine-editor-box" class="card" style="background:#e8eaf6; border:2px solid var(--p)">
+            <h3 style="color:var(--p)"><i class="fas fa-user-shield"></i> অ্যাডমিন মাস্টার কন্ট্রোল</h3>
+            <div id="admin-editor-panel" class="card" style="background:#e8eaf6; border:2px solid var(--p)">
                 <h4>১. রুটিন এডিটর (No Code)</h4>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
-                    <select id="edit-day"><option value="SUNDAY">রবিবার</option><option value="MONDAY">সোমবার</option></select>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                    <select id="edit-day"><option value="SUNDAY">রবিবার</option><option value="MONDAY">সোমবার</option><option value="TUESDAY">মঙ্গলবার</option></select>
                     <select id="edit-class"></select>
                 </div>
-                <select id="edit-cat" onchange="updateSubDropdown()"><option value="Compulsory">আবশ্যিক</option><option value="Science">সায়েন্স</option></select>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
+                <select id="edit-cat" onchange="updateSubDropdown()"><option value="Compulsory">আবশ্যিক</option><option value="Science">বিজ্ঞান</option><option value="Humanities">মানবিক</option><option value="Business">ব্যবসায় শিক্ষা</option></select>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
                     <select id="edit-sub" onchange="updateTchrDropdown()"></select>
                     <select id="edit-tchr"></select>
                 </div>
-                <button class="btn btn-p" onclick="updateCell()">আপডেট করুন</button>
+                <button class="btn btn-p" style="margin-top:10px;" onclick="updateRoutineCell()">রুটিন আপডেট</button>
             </div>
-
-            <div class="card"><h4>২. সকল শিক্ষক (Shadow Login)</h4><div id="shadow-list-ui" style="max-height:300px; overflow-y:auto;"></div></div>
+            <div class="card"><h4>২. সকল শিক্ষক (Shadow Login)</h4><div id="shadow-list-ui" style="max-height:300px; overflow-y:auto; border: 1px solid #eee; border-radius: 10px;"></div></div>
         </div>
     </div>
 
@@ -148,89 +164,118 @@
 </div>
 
 <!-- মোডালসমূহ -->
-<div id="crop-modal"><img id="image-to-crop"><div style="margin-top:20px; display:flex; gap:10px;"><button class="btn btn-p" onclick="doOCR()">টেক্সট</button><button class="btn btn-a" onclick="keepImage()">ইমেজ</button><button class="btn btn-w" onclick="document.getElementById('crop-modal').style.display='none'">বাতিল</button></div></div>
+<div id="crop-modal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:7000; display:none; flex-direction:column; align-items:center; justify-content:center;">
+    <img id="image-to-crop" style="max-width:90%; max-height:65vh;">
+    <div style="margin-top:20px; display:flex; gap:10px; width:95%;"><button class="btn btn-p" onclick="doOCR()">টেক্সট</button><button class="btn btn-a" onclick="keepImage()">ইমেজ</button><button class="btn btn-w" onclick="document.getElementById('crop-modal').style.display='none'">বাতিল</button></div>
+</div>
 
 <div id="preview-modal">
-    <div class="paper" id="paper-to-print">
-        <h2 style="text-align:center">বর্ণমালা কলেজ, কাপাসিয়া</h2><hr>
-        <div id="preview-body" style="margin-top:30px;"></div>
-    </div>
-    <button class="btn btn-w" style="margin-top:10px; width:95%; max-width:800px" onclick="document.getElementById('preview-modal').style.display='none'">বন্ধ করুন</button>
+    <div class="paper"><h2 style="text-align:center">বর্ণমালা কলেজ</h2><hr><div id="preview-body" style="margin-top:30px;"></div></div>
+    <button class="btn btn-w" style="margin-top:10px; width:90%" onclick="document.getElementById('preview-modal').style.display='none'">বন্ধ করুন</button>
 </div>
 
 <script>
+    const ALL_TEACHERS = ["akashmela", "Exam_Admin", "Principal_SYFUL", "ICT_ARIF", "ICT_FORHAD", "ICT_ASAD", "ICT_REJAUL", "Bangla_MOKTER", "Bangla_NASRIN", "English_ALI", "English_PS", "Physics_FAKHRUL", "Physics_SOHAYAB", "Chemistry_TAREK", "Chemistry_NADIM", "Biology_MOFAZZAL", "Biology_ZIMI", "Math_AKRAM", "Math_REJAUL", "Math_ASHRAFUL", "Geo_KAFIL", "Eco_FARID", "Management_AZIZ", "Accounting_JUI", "Finance_AFSAR", "Civics_HASAN", "IS_MOROL"];
+    const MASTER_DATA = { "Compulsory": {"Bangla":["MOKTER","NASRIN"], "English":["ALI","PS"], "ICT":["ARIF","FORHAD"]}, "Science": {"Physics":["FAKHRUL","SOHAYAB"], "Chemistry":["TAREK","NADIM"], "Math":["AKRAM","REJAUL"]}, "Humanities": {"Geography":["KAFIL"], "Civics":["HASAN"]}, "Business": {"Accounting":["JUI"], "Management":["AZIZ"]} };
     const CLASSES = ["XII-SCI-A", "XII-SCI-B", "XII-HU", "XI-SCI-A", "XI-HU", "X-SCI-A", "X-HU", "IX-HU", "IX-BS"];
-    const ALL_TEACHERS = ["Principal_SYFUL", "Bangla_MOKTER", "Bangla_NASRIN", "English_ALI", "English_PS", "ICT_ARIF", "ICT_FORHAD", "ICT_ASAD", "Physics_FAKHRUL", "Physics_SOHAYAB", "Chemistry_TAREK", "Math_AKRAM", "Math_REJAUL", "Geo_KAFIL", "Eco_FARID", "Management_AZIZ", "Accounting_JUI", "Finance_AFSAR", "Civics_HASAN", "IS_MOROL"];
-    const MASTER_DATA = { "Compulsory": {"Bangla":["MOKTER","NASRIN"], "English":["ALI","PS"], "ICT":["ARIF","FORHAD"]}, "Science": {"Physics":["FAKHRUL"], "Math":["REJAUL"]} };
 
     let STORE = { routine: { "SUNDAY": [{c:"XII-SCI-A", p:["BAN-MOKTER","ENG-ALI","PHY FAKHRUL","BIO-MOFAZZAL","MATH AKRAM","CHE TAREK","ENG-ALI","ICT-FORHAD"]}] } };
     let realUser = ""; let activeUser = ""; let cropper = null;
 
     function init() {
-        const local = localStorage.getItem('star_v64_db');
+        const local = localStorage.getItem('star_v75_final_db');
         if(local) STORE = JSON.parse(local);
         realUser = localStorage.getItem('star_session');
-        
         const logSel = document.getElementById('log-id');
-        ALL_TEACHERS.sort().forEach(t => logSel.innerHTML += `<option value="${t}">${t}</option>`);
+        const regSel = document.getElementById('reg-id');
+        ALL_TEACHERS.sort().forEach(t => { logSel.innerHTML += `<option value="${t}">${t}</option>`; regSel.innerHTML += `<option value="${t}">${t}</option>`; });
 
-        if(!realUser) return;
-        document.getElementById('auth-section').classList.add('hidden');
-        document.getElementById('app-main').classList.remove('hidden');
-        if(["akashmela","SYFUL","Exam_Admin"].includes(realUser)) { document.getElementById('admin-nav').classList.remove('hidden'); setupAdmin(); }
-        drawTable('SUNDAY');
-        loadDraft(activeUser = realUser);
+        if(!realUser) document.getElementById('auth-section').classList.remove('hidden');
+        else {
+            activeUser = realUser;
+            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('app-main').classList.remove('hidden');
+            if(realUser === "akashmela") { document.getElementById('admin-nav').classList.remove('hidden'); setupAdmin(); }
+            drawTable('SUNDAY', document.getElementById('btn-SUNDAY'));
+            loadDraft(activeUser);
+        }
     }
 
-    // ১. নিরাপত্তা ও ড্রাফট (No-Leak Logic)
-    function saveDraft() { localStorage.setItem('q_v64_private_' + activeUser, document.getElementById('q-editor').innerHTML); alert("আপনার ব্যক্তিগত ড্রাফট সেভ হয়েছে।"); }
-    function loadDraft(u) { document.getElementById('q-editor').innerHTML = localStorage.getItem('q_v64_private_' + u) || ""; }
+    function handleLogin() {
+        const id = document.getElementById('log-id').value; const pw = document.getElementById('log-pw').value;
+        if(id === "akashmela" && pw === "S@nmania2026") { localStorage.setItem('star_session', id); location.reload(); }
+        else if(id === "Exam_Admin" && pw === "exam2026") { localStorage.setItem('star_session', id); location.reload(); }
+        else if(id && pw) { localStorage.setItem('star_session', id); location.reload(); }
+    }
 
-    // ২. রুটিন ও পিরিয়ড মেসেজ
-    function drawTable(day) {
+    function drawTable(day, btn) {
+        document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active-day'));
+        if(btn) btn.classList.add('active-day');
         const body = document.getElementById('master-body'); body.innerHTML = "";
         (STORE.routine[day] || []).forEach(row => {
-            let tr = `<tr><td style="font-weight:bold; background:#f5f5f5">${row.c}</td>`;
+            let tr = `<tr><td style="font-weight:bold; background:#f1f3f4">${row.c}</td>`;
             row.p.forEach(p => tr += `<td class="${p.includes('ICT')?'lab':''}">${p}</td>`);
             body.innerHTML += tr + `</tr>`;
         });
-        updateMineMsg(day);
-    }
-
-    function updateMineMsg(day) {
         const search = activeUser.split('_')[1] || activeUser;
         const mine = (STORE.routine[day] || []).filter(r => r.p.some(p => p.includes(search)));
-        document.getElementById('mine-schedule').innerText = mine.length > 0 ? `আজ আপনার ${mine.length}টি ক্লাস আছে।` : "আজ আপনার কোনো ক্লাস নেই।";
+        document.getElementById('mine-alert').innerText = mine.length > 0 ? `আজ আপনার ${mine.length}টি ক্লাস আছে।` : "আজ আপনার কোনো ক্লাস নেই।";
+        const list = document.getElementById('mine-schedule'); list.innerHTML = "";
+        mine.forEach(c => list.innerHTML += `<div class="card" style="border-left:8px solid var(--p)"><b>${c.c}</b></div>`);
     }
 
-    // ৩. অ্যাডমিন এডিটর ও শ্যাডো
     function setupAdmin() {
         const clsSel = document.getElementById('edit-class'); CLASSES.forEach(c => clsSel.innerHTML += `<option value="${c}">${c}</option>`);
         const shadowList = document.getElementById('shadow-list-ui'); ALL_TEACHERS.sort().forEach(t => shadowList.innerHTML += `<div class="user-row" onclick="enterShadow('${t}')">${t} <i class="fas fa-eye"></i></div>`);
         updateSubDropdown();
     }
 
-    function enterShadow(name) {
-        activeUser = name; document.getElementById('shadow-banner').classList.remove('hidden'); document.getElementById('shadow-name').innerText = name;
-        document.getElementById('routine-editor-box').classList.add('hidden'); // শ্যাডো মোডে এডিটর হাইড
-        loadDraft(name); showTab('home');
+    function updateSubDropdown() {
+        const cat = document.getElementById('edit-cat').value;
+        const subS = document.getElementById('edit-sub'); subS.innerHTML = "";
+        Object.keys(MASTER_DATA[cat]).forEach(s => subS.innerHTML += `<option>${s}</option>`);
+        updateTchrDropdown();
     }
 
-    function exitShadow() { activeUser = realUser; document.getElementById('shadow-banner').classList.add('hidden'); document.getElementById('routine-editor-box').classList.remove('hidden'); loadDraft(realUser); }
+    function updateTchrDropdown() {
+        const cat = document.getElementById('edit-cat').value; const sub = document.getElementById('edit-sub').value;
+        const tSel = document.getElementById('edit-tchr'); tSel.innerHTML = "";
+        (MASTER_DATA[cat][sub] || []).forEach(t => tSel.innerHTML += `<option value="${sub}_${t}">${sub}_${t}</option>`);
+    }
 
-    // অন্যান্য সাধারণ ফাংশন
-    function showPreview() { document.getElementById('preview-modal').style.display = "flex"; document.getElementById('preview-body').innerHTML = document.getElementById('q-editor').innerHTML; }
-    function submitToAdmin() { alert("পরীক্ষা কমিটির নিকট পাঠানো হয়েছে।"); }
-    function updateSubDropdown() { const cat = document.getElementById('edit-cat').value; const subS = document.getElementById('edit-sub'); subS.innerHTML = ""; Object.keys(MASTER_DATA[cat] || {}).forEach(s => subS.innerHTML += `<option>${s}</option>`); updateTchrDropdown(); }
-    function updateTchrDropdown() { const cat = document.getElementById('edit-cat').value; const sub = document.getElementById('edit-sub').value; const tSel = document.getElementById('edit-tchr'); tSel.innerHTML = ""; (MASTER_DATA[cat][sub] || []).forEach(t => tSel.innerHTML += `<option value="${sub}_${t}">${sub}_${t}</option>`); }
-    function updateCell() { const d = document.getElementById('edit-day').value; const c = document.getElementById('edit-class').value; const val = document.getElementById('edit-tchr').value; if(!STORE.routine[d]) STORE.routine[d] = []; let row = STORE.routine[d].find(r => r.c === c); if(!row) { row = {c:c, p:["-","-","-","-","-","-","-","-"]}; STORE.routine[d].push(row); } row.p[0] = val; localStorage.setItem('star_v64_db', JSON.stringify(STORE)); alert("সফল!"); drawTable(d); }
-    function handleLogin() { const id = document.getElementById('log-id').value; const pw = document.getElementById('log-pw').value; if(id === "akashmela" && pw === "S@nmania2026") { localStorage.setItem('star_session', id); location.reload(); } else if(id) { localStorage.setItem('star_session', id); location.reload(); } }
-    function showTab(t) { document.querySelectorAll('.tab-page').forEach(p => p.classList.add('hidden')); document.getElementById('tab-' + t).classList.remove('hidden'); document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active')); }
-    function initOCR(e) { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = (ev) => { document.getElementById('image-to-crop').src = ev.target.result; document.getElementById('crop-modal').style.display = "flex"; if(cropper) cropper.destroy(); cropper = new Cropper(document.getElementById('image-to-crop'), { viewMode: 1 }); }; reader.readAsDataURL(file); }
-    async function doOCR() { const canvas = cropper.getCroppedCanvas(); document.getElementById('crop-modal').style.display = "none"; const res = await Tesseract.recognize(canvas, 'eng+ben'); document.getElementById('q-editor').focus(); document.execCommand('insertHTML', false, res.data.text.replace(/\n/g,"<br>")); }
+    function updateRoutineCell() {
+        const d = document.getElementById('edit-day').value; const c = document.getElementById('edit-class').value; const val = document.getElementById('edit-tchr').value;
+        if(!STORE.routine[d]) STORE.routine[d] = [];
+        let row = STORE.routine[d].find(r => r.c === c);
+        if(!row) { row = {c:c, p:["-","-","-","-","-","-","-","-"]}; STORE.routine[d].push(row); }
+        row.p[0] = val; saveDB(); alert("সফল!"); drawTable(d);
+    }
+
+    function initOCR(e) {
+        const file = e.target.files[0]; if(!file) return;
+        const reader = new FileReader(); reader.onload = (ev) => {
+            document.getElementById('image-to-crop').src = ev.target.result;
+            document.getElementById('crop-modal').style.display = "flex";
+            if(cropper) cropper.destroy(); cropper = new Cropper(document.getElementById('image-to-crop'), { viewMode: 1 });
+        }; reader.readAsDataURL(file);
+    }
+
+    async function doOCR() {
+        const canvas = cropper.getCroppedCanvas(); document.getElementById('crop-modal').style.display = "none";
+        alert("প্রসেসিং..."); const res = await Tesseract.recognize(canvas, 'eng+ben');
+        document.getElementById('q-editor').focus(); document.execCommand('insertHTML', false, res.data.text.replace(/\n/g,"<br>"));
+    }
+
     function keepImage() { const img = `<br><img src="${cropper.getCroppedCanvas().toDataURL('image/jpeg', 0.6)}"><br>`; document.getElementById('q-editor').focus(); document.execCommand('insertHTML', false, img); document.getElementById('crop-modal').style.display = "none"; }
+    function saveDraft() { localStorage.setItem('q_v75_p_' + activeUser, document.getElementById('q-editor').innerHTML); alert("সংরক্ষিত।"); }
+    function loadDraft(u) { const ed = document.getElementById('q-editor'); ed.innerHTML = ""; ed.innerHTML = localStorage.getItem('q_v75_p_' + u) || ""; }
+    function toggleAuth(s) { document.getElementById('login-ui').classList.toggle('hidden', s); document.getElementById('signup-ui').classList.toggle('hidden', !s); }
+    function showTab(t) { document.querySelectorAll('.tab-page').forEach(p => p.classList.add('hidden')); document.getElementById('tab-' + t).classList.remove('hidden'); document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active')); }
+    function saveDB() { localStorage.setItem('star_v75_final_db', JSON.stringify(STORE)); }
     function doLogout() { localStorage.removeItem('star_session'); location.reload(); }
     function toggleRoutine(v) { document.getElementById('view-master').classList.toggle('hidden', v!=='all'); document.getElementById('view-mine').classList.toggle('hidden', v!=='mine'); }
+    function enterShadow(n) { activeUser = n; document.getElementById('shadow-banner').classList.remove('hidden'); document.getElementById('shadow-name').innerText = n; document.getElementById('admin-editor-panel').classList.add('hidden'); loadDraft(n); showTab('home'); }
+    function exitShadow() { activeUser = realUser; document.getElementById('shadow-banner').classList.add('hidden'); document.getElementById('admin-editor-panel').classList.remove('hidden'); loadDraft(activeUser); }
 
     window.onload = init;
 </script>
