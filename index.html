@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STAR Portal v78 - Verified Full Teacher List</title>
+    <title>STAR Portal v79 - English Faculty Special</title>
     
     <!-- External Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
@@ -18,6 +18,7 @@
         body { font-family: 'Kalpurush', sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; color: #333; overflow-x: hidden; }
         .hidden { display: none !important; }
         
+        /* বৃত্তাকার লোগো */
         .circle-logo { width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--p); object-fit: cover; background: #fff; margin: 0 auto 15px; display: block; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         .header-logo { width: 42px; height: 42px; border-radius: 50%; border: 2px solid #fff; object-fit: cover; background: #fff; margin-right: 10px; }
 
@@ -25,14 +26,15 @@
         .container { padding: 15px; max-width: 1400px; margin: auto; }
         .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #e0e6ed; }
 
+        /* Rich Editor */
         #q-editor { min-height: 400px; border: 2px solid #d1d9e6; border-radius: 12px; padding: 20px; background: white; outline: none; overflow-y: auto; line-height: 1.8; font-size: 18px; }
         #q-editor img { max-width: 100%; border-radius: 5px; margin: 15px 0; display: block; border: 1px solid #ddd; }
 
+        /* Table & Nav */
         .table-wrapper { width: 100%; overflow-x: auto; background: white; border-radius: 10px; border: 1px solid #ddd; margin-top: 10px; }
         table { width: 100%; border-collapse: collapse; min-width: 1100px; font-size: 11px; }
         th, td { border: 1px solid #eee; padding: 10px 5px; text-align: center; }
         th { background: #e8eaf6; color: var(--p); font-weight: bold; position: sticky; top: 0; }
-        .time-header { background: #f5f5f5; color: #555; font-size: 10px; font-weight: normal; }
         .lab { background: #fff9c4 !important; font-weight: bold; border: 1.5px solid #fbc02d !important; }
 
         nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; border-top: 1px solid #ddd; z-index: 1000; height: 75px; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); }
@@ -48,15 +50,13 @@
         .active-day { background: var(--p) !important; color: white !important; }
 
         .shadow-banner { background: #ffeb3b; padding: 10px; text-align: center; font-weight: bold; position: sticky; top: 65px; z-index: 999; border-bottom: 2px solid #fbc02d; font-size: 13px; }
-        .user-row { display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; transition: 0.2s; }
-        .user-row:hover { background: #e3f2fd; }
         #preview-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 7000; display: none; flex-direction: column; align-items: center; justify-content: center; }
-        .paper { background: white; width: 95%; max-width: 800px; height: 90vh; overflow-y: auto; padding: 50px; border-radius: 10px; font-family: serif; }
+        .paper { background: white; width: 95%; max-width: 850px; height: 90vh; overflow-y: auto; padding: 50px; border-radius: 10px; font-family: serif; }
     </style>
 </head>
 <body>
 
-<!-- অথেন্টিকেশন -->
+<!-- লগইন গেটওয়ে -->
 <div id="auth-section" style="height: 100vh; background: var(--p); display: flex; align-items: center; justify-content: center; position: fixed; width: 100%; top: 0; z-index: 5000;">
     <div class="card" style="width: 90%; max-width: 420px; text-align: center; border-radius: 20px;">
         <img src="logo.png" onerror="this.src='https://i.ibb.co/VWVjK8L/logo.jpg'" class="circle-logo">
@@ -87,9 +87,9 @@
     <header>
         <div style="display:flex; align-items:center;">
             <img src="logo.png" onerror="this.src='https://i.ibb.co/VWVjK8L/logo.jpg'" class="header-logo">
-            <span>বর্ণমালা কলেজ ড্যাশবোর্ড</span>
+            <span>ড্যাশবোর্ড</span>
         </div>
-        <button onclick="doLogout()" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;"><i class="fas fa-power-off"></i></button>
+        <button onclick="doLogout()" style="background:none; border:none; color:white; font-size:20px;"><i class="fas fa-power-off"></i></button>
     </header>
     
     <div class="container">
@@ -112,7 +112,7 @@
                     <table>
                         <thead>
                             <tr><th rowspan="2">Class</th><th>1st</th><th>2nd</th><th>3rd</th><th>4th</th><th>5th</th><th>6th</th><th>7th</th><th>8th</th></tr>
-                            <tr class="time-header"><th>8:35-9:20</th><th>9:20-10:05</th><th>10:05-10:50</th><th>10:50-11:35</th><th>11:35-12:20</th><th>1:00-1:45</th><th>1:45-2:30</th><th>2:30-3:10</th></tr>
+                            <tr style="background:#f5f5f5; font-size:9px"><th>8:35-9:20</th><th>9:20-10:05</th><th>10:05-10:50</th><th>10:50-11:35</th><th>11:35-12:20</th><th>1:00-1:45</th><th>1:45-2:30</th><th>2:30-3:10</th></tr>
                         </thead>
                         <tbody id="master-body"></tbody>
                     </table>
@@ -139,25 +139,22 @@
         <!-- ট্যাব ৩: অ্যাডমিন এডিটর -->
         <div id="tab-admin" class="tab-page hidden">
             <h3 style="color:var(--p)"><i class="fas fa-user-shield"></i> অ্যাডমিন মাস্টার ড্যাশবোর্ড</h3>
-            
             <div id="admin-editor-panel" class="card" style="background:#e8eaf6; border:2px solid var(--p); border-radius:15px; padding:20px;">
-                <h4><i class="fas fa-edit"></i> রুটিন এডিটর (সময় স্লট ইন্টিগ্রেটেড)</h4>
+                <h4><i class="fas fa-edit"></i> রুটিন এডিটর</h4>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
-                    <select id="edit-day"><option value="SUNDAY">রবিবার</option><option value="MONDAY">সোমবার</option><option value="TUESDAY">মঙ্গলবার</option><option value="WEDNESDAY">বুধবার</option><option value="THURSDAY">বৃহস্পতিবার</option></select>
+                    <select id="edit-day"><option value="SUNDAY">রবিবার</option><option value="MONDAY">সোমবার</option><option value="TUESDAY">মঙ্গলবার</option></select>
                     <select id="edit-class"></select>
                 </div>
-                <label>পিরিয়ড নির্বাচন:</label>
-                <select id="edit-p-idx">
-                    <option value="0">১ম (8:35-9:20)</option><option value="1">২য় (9:20-10:05)</option><option value="2">৩য় (10:05-10:50)</option><option value="3">৪র্থ (10:50-11:35)</option><option value="4">৫ম (11:35-12:20)</option><option value="5">৬ষ্ঠ (1:00-1:45)</option><option value="6">৭ম (1:45-2:30)</option><option value="7">৮ম (2:30-3:10)</option>
-                </select>
-                <hr style="margin:15px 0; border:0.5px solid #ccc">
-                <label>বিভাগ ও শিক্ষক নির্বাচন:</label>
                 <select id="edit-cat" onchange="updateSubDropdown()"><option value="Compulsory">আবশ্যিক</option><option value="Science">বিজ্ঞান</option><option value="Humanities">মানবিক</option><option value="Business">ব্যবসায় শিক্ষা</option></select>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
                     <select id="edit-sub" onchange="updateTchrDropdown()"></select>
                     <select id="edit-tchr"></select>
                 </div>
-                <button class="btn btn-p" style="margin-top:15px;" onclick="updateRoutineCell()">পিরিয়ড আপডেট করুন</button>
+                <label>পিরিয়ড ও সময়:</label>
+                <select id="edit-p-idx">
+                    <option value="0">১ম (8:35-9:20)</option><option value="1">২য় (9:20-10:05)</option><option value="2">৩য় (10:05-10:50)</option><option value="3">৪র্থ (10:50-11:35)</option><option value="4">৫ম (11:35-12:20)</option><option value="5">৬ষ্ঠ (1:00-1:45)</option><option value="6">৭ম (1:45-2:30)</option><option value="7">৮ম (2:30-3:10)</option>
+                </select>
+                <button class="btn btn-p" style="margin-top:15px;" onclick="updateRoutineCell()">রুটিন আপডেট করুন</button>
             </div>
             <div class="card"><h4>সকল শিক্ষক (Shadow Login)</h4><div id="shadow-list-ui" style="max-height:300px; overflow-y:auto; border: 1px solid #eee; border-radius: 10px;"></div></div>
         </div>
@@ -170,7 +167,7 @@
     </nav>
 </div>
 
-<!-- ওসিআর মোডাল -->
+<!-- মোডালসমূহ -->
 <div id="crop-modal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:7000; display:none; flex-direction:column; align-items:center; justify-content:center;">
     <img id="image-to-crop" style="max-width:90%; max-height:65vh;">
     <div style="margin-top:20px; display:flex; gap:10px; width:95%;"><button class="btn btn-p" onclick="doOCR()">টেক্সট</button><button class="btn btn-a" onclick="keepImage()">ইমেজ</button><button class="btn btn-w" onclick="document.getElementById('crop-modal').style.display='none'">বাতিল</button></div>
@@ -182,25 +179,24 @@
 </div>
 
 <script>
-    // ১০০% ভেরিফাইড পূর্ণাঙ্গ ডাটাবেস (Updated with ASAD & SAIFUR)
+    // ১০০% ভেরিফাইড পূর্ণাঙ্গ ডাটাবেস (English Faculty Expanded)
     const MASTER_DATA = { 
         "Compulsory": {
-            "Bangla": ["MOKTER","NASRIN"], 
-            "English": ["ALI","PS"], 
-            "ICT": ["ARIF","FORHAD","ASAD","REJAUL"] // আসাদ স্যার ও রেজাউল স্যার যোগ করা হয়েছে
+            "Bangla": ["MOKTER","NASRIN","POLAS","SHIMUL"], 
+            "English": ["ALI","Principal_PS","FARID","KARIM","FARUK","HOSSAIN","SHAMIM"], // ৭ জন শিক্ষক
+            "ICT": ["ARIF","FORHAD","ASAD","REJAUL"]
         }, 
         "Science": {
-            "Physics": ["FAKHRUL","SOHAYAB","HOSSAIN"], 
+            "Physics": ["FAKHRUL","SOHAYAB","HOSSAIN","M.RAHMAN"], 
             "Chemistry": ["TAREK","NADIM"], 
             "Biology": ["MOFAZZAL","ZIMI"], 
-            "Math": ["AKRAM","REJAUL","ASHRAFUL","MAHFUZ"], 
-            "Agriculture": ["ZIA"]
+            "Math": ["AKRAM","REJAUL","ASHRAFUL","MAHFUZ"]
         },
         "Humanities": {
             "Civics": ["HASAN","NASRIN"], 
             "Geography": ["KAFIL"], 
             "Economics": ["FARID"], 
-            "History/IS": ["SAIFUR","MOROL"] // সাইফুর স্যার যোগ করা হয়েছে
+            "History/IS": ["SAIFUR","MOROL"]
         },
         "Business": {
             "Accounting": ["JUI"], 
@@ -209,17 +205,16 @@
         }
     };
 
-    const ALL_TEACHERS = ["akashmela", "Exam_Admin", "Principal_SYFUL", "ICT_ARIF", "ICT_FORHAD", "ICT_ASAD", "Bangla_MOKTER", "Bangla_NASRIN", "English_ALI", "English_PS", "Physics_FAKHRUL", "Physics_SOHAYAB", "Physics_HOSSAIN", "Chemistry_TAREK", "Chemistry_NADIM", "Biology_MOFAZZAL", "Biology_ZIMI", "Math_AKRAM", "Math_REJAUL", "Math_ASHRAFUL", "Math_MAHFUZ", "Geo_KAFIL", "Eco_FARID", "Management_AZIZ", "Accounting_JUI", "Finance_AFSAR", "Civics_HASAN", "IS_MOROL", "IS_SAIFUR"];
-    const CLASSES = ["XII-SCI-A", "XII-SCI-B", "XII-HU", "XII-BS", "XI-SCI-A", "XI-SCI-B", "XI-SCI-C", "XI-HU", "XI-BS", "X-SCI-A", "X-SCI-B", "X-HU", "X-BS", "IX-SCI-A", "IX-SCI-B", "IX-SCI-C", "IX-HU", "IX-BS"];
+    const ALL_TEACHERS = ["akashmela", "Exam_Admin", "SYFUL", "ARIF", "FORHAD", "ASAD", "MOKTER", "NASRIN", "POLAS", "SHIMUL", "ALI", "Principal_PS", "FARID", "FAKHRUL", "SOHAYAB", "HOSSAIN", "M.RAHMAN", "TAREK", "NADIM", "MOFAZZAL", "ZIMI", "AKRAM", "ASHRAFUL", "MAHFUZ", "REJAUL", "ZIA", "JUI", "KAFIL", "HASAN", "SAIFUR", "MOROL", "SHAMIM", "KARIM"];
+
+    const CLASSES = ["XII-SCI-A", "XII-SCI-B", "XII-SCI-C", "XII-HU", "XII-BS", "XI-SCI-A", "XI-SCI-B", "XI-SCI-C", "XI-HU", "XI-BS", "X-SCI-A", "X-SCI-B", "X-HU", "X-BS", "IX-SCI-A", "IX-SCI-B", "IX-SCI-C", "IX-HU", "IX-BS"];
 
     let STORE = { routine: { "SUNDAY": [{c:"XII-SCI-A", p:["BAN-MOKTER","ENG-ALI","PHY FAKHRUL","BIO-MOFAZZAL","MATH AKRAM","CHE TAREK","ENG-ALI","ICT-FORHAD"]}] } };
     let realUser = ""; let activeUser = ""; let cropper = null;
 
     function init() {
-        // v77 এর ডাটাবেস কি (Key) ব্যবহার করা হয়েছে যাতে পুরনো ডাটা হারিয়ে না যায়
-        const local = localStorage.getItem('star_v77_final_db');
+        const local = localStorage.getItem('star_v78_final_db');
         if(local) STORE = JSON.parse(local);
-        
         realUser = localStorage.getItem('star_session');
         const logSel = document.getElementById('log-id');
         const regSel = document.getElementById('reg-id');
@@ -255,7 +250,7 @@
     }
 
     function updateMineStatus(day) {
-        const search = activeUser.split('_')[1] || activeUser;
+        const search = activeUser.replace('Principal_', '');
         const mine = (STORE.routine[day] || []).filter(r => r.p.some(p => p.includes(search)));
         document.getElementById('mine-alert').innerText = mine.length > 0 ? `আজ আপনার ${mine.length}টি ক্লাস আছে।` : "আজ আপনার কোনো ক্লাস নেই।";
         const list = document.getElementById('mine-schedule'); list.innerHTML = "";
@@ -272,7 +267,7 @@
     function updateSubDropdown() {
         const cat = document.getElementById('edit-cat').value;
         const subS = document.getElementById('edit-sub'); subS.innerHTML = "";
-        Object.keys(MASTER_DATA[cat]).forEach(s => subS.innerHTML += `<option value="${s}">${s}</option>`);
+        Object.keys(MASTER_DATA[cat]).forEach(s => subS.innerHTML += `<option>${s}</option>`);
         updateTchrDropdown();
     }
 
@@ -288,7 +283,7 @@
         if(!STORE.routine[d]) STORE.routine[d] = [];
         let row = STORE.routine[d].find(r => r.c === c);
         if(!row) { row = {c:c, p:["-","-","-","-","-","-","-","-"]}; STORE.routine[d].push(row); }
-        row.p[pIdx] = val; localStorage.setItem('star_v77_final_db', JSON.stringify(STORE)); alert("আপডেট সফল!"); drawTable(d);
+        row.p[pIdx] = val; localStorage.setItem('star_v78_final_db', JSON.stringify(STORE)); alert("সফল!"); drawTable(d);
     }
 
     function initOCR(e) {
@@ -313,14 +308,15 @@
         document.getElementById('crop-modal').style.display = "none";
     }
 
-    function saveDraft() { localStorage.setItem('q_v77_p_' + activeUser, document.getElementById('q-editor').innerHTML); alert("সংরক্ষিত।"); }
-    function loadDraft(u) { const ed = document.getElementById('q-editor'); ed.innerHTML = ""; ed.innerHTML = localStorage.getItem('q_v77_p_' + u) || ""; }
+    function saveDraft() { localStorage.setItem('q_v79_p_' + activeUser, document.getElementById('q-editor').innerHTML); alert("সংরক্ষিত।"); }
+    function loadDraft(u) { const ed = document.getElementById('q-editor'); ed.innerHTML = ""; ed.innerHTML = localStorage.getItem('q_v79_p_' + u) || ""; }
     function showTab(t) { document.querySelectorAll('.tab-page').forEach(p => p.classList.add('hidden')); document.getElementById('tab-' + t).classList.remove('hidden'); document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active')); }
     function doLogout() { localStorage.removeItem('star_session'); location.reload(); }
     function toggleRoutine(v) { document.getElementById('view-master').classList.toggle('hidden', v!=='all'); document.getElementById('view-mine').classList.toggle('hidden', v!=='mine'); }
     function enterShadow(n) { activeUser = n; document.getElementById('shadow-banner').classList.remove('hidden'); document.getElementById('shadow-name').innerText = n; document.getElementById('admin-editor-panel').classList.add('hidden'); loadDraft(n); showTab('home'); }
     function exitShadow() { activeUser = realUser; document.getElementById('shadow-banner').classList.add('hidden'); document.getElementById('admin-editor-panel').classList.remove('hidden'); loadDraft(activeUser); }
     function toggleAuth(s) { document.getElementById('login-ui').classList.toggle('hidden', s); document.getElementById('signup-ui').classList.toggle('hidden', !s); }
+    function showPreview() { document.getElementById('preview-modal').style.display = "flex"; document.getElementById('preview-body').innerHTML = document.getElementById('q-editor').innerHTML; }
 
     window.onload = init;
 </script>
