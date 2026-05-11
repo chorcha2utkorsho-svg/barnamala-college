@@ -3,238 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STAR Portal v92 - Final Safe Login</title>
+    <title>STAR Portal v102 - Magic Question Editor</title>
     
-    <!-- External Icons -->
+    <!-- Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
     <style>
         @import url('https://cdn.jsdelivr.net/gh/at-shovon/kalpurush-font@master/kalpurush.woff2');
         :root { --p: #1a237e; --s: #3949ab; --a: #2e7d32; --w: #d32f2f; --bg: #f4f7f9; }
-        body { font-family: 'Kalpurush', sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; color: #333; }
+        body { font-family: 'Kalpurush', sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; color: #333; overflow-x: hidden; }
         .hidden { display: none !important; }
         
-        /* Auth Screen */
-        #auth-section { height: 100vh; background: var(--p); display: flex; align-items: center; justify-content: center; position: fixed; width: 100%; top: 0; z-index: 9999; }
-        .auth-card { background: white; padding: 35px; border-radius: 20px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
-        
-        header { background: var(--p); color: white; padding: 18px; text-align: center; font-size: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        header { background: var(--p); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
         .container { padding: 15px; max-width: 1400px; margin: auto; }
-        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #e0e6ed; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 15px; border: 1px solid #e0e6ed; }
 
-        select, input, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1.5px solid #d1d9e6; border-radius: 10px; font-family: 'Kalpurush'; box-sizing: border-box; font-size: 15px; display: block; }
-        .btn { border: none; padding: 14px; border-radius: 10px; cursor: pointer; font-family: 'Kalpurush'; font-weight: bold; width: 100%; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-p { background: var(--p); color: white; }
-        .btn-a { background: var(--a); color: white; }
+        /* Magic Editor Toolbar */
+        .editor-toolbar { display: flex; flex-wrap: wrap; gap: 5px; padding: 10px; background: #f1f3f4; border: 1px solid #d1d9e6; border-radius: 12px 12px 0 0; border-bottom: none; }
+        .toolbar-btn { background: white; border: 1px solid #ccc; padding: 6px 10px; border-radius: 5px; cursor: pointer; font-size: 14px; color: #333; transition: 0.2s; }
+        .toolbar-btn:hover { background: var(--p); color: white; }
+        #q-editor { min-height: 450px; border: 1.5px solid #d1d9e6; border-radius: 0 0 12px 12px; padding: 25px; background: white; outline: none; overflow-y: auto; line-height: 1.8; font-size: 19px; }
+        #q-editor img { max-width: 100%; border-radius: 5px; margin: 15px 0; display: block; border: 1px solid #ddd; }
 
-        /* Table */
-        .table-wrapper { width: 100%; overflow-x: auto; background: white; border-radius: 10px; border: 1px solid #ddd; margin-top: 10px; }
+        /* Master Table */
+        .table-wrapper { width: 100%; overflow-x: auto; background: white; border-radius: 12px; border: 1px solid #ddd; margin-top: 10px; }
         table { width: 100%; border-collapse: collapse; min-width: 1100px; font-size: 11px; }
         th, td { border: 1px solid #eee; padding: 10px 5px; text-align: center; }
-        th { background: #e8eaf6; color: var(--p); font-weight: bold; }
+        th { background: #e8eaf6; color: var(--p); font-weight: bold; position: sticky; top: 0; }
         .lab { background: #fff9c4 !important; font-weight: bold; border: 1.5px solid #fbc02d !important; }
 
+        /* Nav & Auth */
         nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; border-top: 1px solid #ddd; z-index: 1000; height: 75px; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); }
-        .nav-item { flex: 1; text-align: center; padding: 12px; color: #78909c; cursor: pointer; font-size: 10px; }
+        .nav-item { flex: 1; text-align: center; padding: 12px 2px; color: #78909c; cursor: pointer; font-size: 10px; }
+        .nav-item i { font-size: 22px; margin-bottom: 4px; display: block; }
         .nav-item.active { color: var(--p); font-weight: bold; border-top: 4px solid var(--p); }
-        .day-btn { padding: 8px 18px; border: none; border-radius: 20px; background: #eceff1; cursor: pointer; white-space: nowrap; font-weight: bold; margin-right: 5px; }
+        .auth-screen { height: 100vh; background: var(--p); display: flex; align-items: center; justify-content: center; position: fixed; width: 100%; top: 0; z-index: 9000; }
+        
+        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1.5px solid #d1d9e6; border-radius: 10px; font-family: 'Kalpurush'; box-sizing: border-box; font-size: 15px; }
+        .btn { border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-family: 'Kalpurush'; font-weight: bold; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; font-size: 14px; }
+        .btn-p { background: var(--p); color: white; }
+        .btn-a { background: var(--a); color: white; }
+        .day-btn { padding: 10px 20px; border: none; border-radius: 25px; background: #eceff1; cursor: pointer; white-space: nowrap; font-weight: bold; margin-right: 5px; }
         .active-day { background: var(--p) !important; color: white !important; }
+        
+        #preview-modal, #crop-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9500; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        .paper { background: white; width: 95%; max-width: 850px; height: 90vh; overflow-y: auto; padding: 50px; border-radius: 10px; font-family: serif; position: relative; }
     </style>
 </head>
 <body>
 
-<!-- লগইন স্ক্রিন (সর্বোচ্চ অগ্রাধিকার) -->
-<div id="auth-section">
-    <div class="auth-card">
-        <img src="logo.png" onerror="this.src='https://i.ibb.co/VWVjK8L/logo.jpg'" style="width:80px; height:80px; border-radius:50%; margin-bottom:15px; border:3px solid var(--p); object-fit: cover;">
-        <h2>বর্ণমালা কলেজ পোর্টাল</h2>
-        <select id="log-id">
-            <option value="">নিজের পরিচয় নির্বাচন করুন</option>
-            <option value="akashmela">Master Admin (akashmela)</option>
-            <option value="Exam_Admin">Exam Admin (কমিটি)</option>
-            <option value="SYFUL">Principal (SYFUL)</option>
-            <option disabled>────── শিক্ষকবৃন্দ ──────</option>
-            <option value="ICT_ARIF">ICT_ARIF</option>
-            <option value="Bangla_MOKTER">Bangla_MOKTER</option>
-            <option value="Physics_FAKHRUL">Physics_FAKHRUL</option>
-            <option value="Civics_HASAN">Civics_HASAN</option>
-            <option value="Math_MAHFUZ">Math_MAHFUZ</option>
-            <option value="REL_NASRIN">REL NASRIN</option>
-            <option value="REL_AZIZ">REL AZIZ</option>
-            <option value="SCI-M.RAHMAN">SCI-M.RAHMAN</option>
-            <option value="SCI-REJAUL">SCI-REJAUL</option>
-        </select>
-        <input type="password" id="log-pw" placeholder="আপনার পাসওয়ার্ড দিন">
-        <button class="btn btn-p" id="login-trigger" onclick="forceLogin()">প্রবেশ করুন</button>
+<!-- লগইন গেটওয়ে -->
+<div id="auth-section" class="auth-screen">
+    <div class="card" style="width: 90%; max-width: 420px; text-align: center; border-radius: 20px;">
+        <img src="logo.png" onerror="this.src='https://i.ibb.co/VWVjK8L/logo.jpg'" style="width:100px; height:100px; border-radius:50%; border:3px solid var(--p); margin-bottom:15px; object-fit: cover;">
+        <h2>বর্ণমালা কলেজ স্মার্ট পোর্টাল</h2>
+        <div id="login-ui">
+            <select id="log-id"><option value="">নিজের পরিচয় নির্বাচন করুন</option></select>
+            <input type="password" id="log-pw" placeholder="পাসওয়ার্ড">
+            <button class="btn btn-p" onclick="handleLogin()">প্রবেশ করুন</button>
+            <p onclick="toggleAuth(true)" style="margin-top:15px; color:var(--s); cursor:pointer; font-weight:bold; text-decoration:underline;">নতুন একাউন্ট (রেজিস্ট্রেশন)</p>
+        </div>
+        <div id="signup-ui" class="hidden">
+            <select id="reg-id"><option value="">তালিকা থেকে নিজেকে বেছে নিন</option></select>
+            <input type="password" id="reg-pw" placeholder="পাসওয়ার্ড">
+            <input type="email" id="reg-email" placeholder="আপনার জি-মেইল আইডি">
+            <button class="btn btn-a" onclick="alert('রেজিস্ট্রেশন সফল!')">একাউন্ট তৈরি করুন</button>
+            <p onclick="toggleAuth(false)" style="margin-top:15px; cursor:pointer; font-weight:bold;">লগইন করুন</p>
+        </div>
     </div>
 </div>
 
 <!-- মূল অ্যাপ ড্যাশবোর্ড -->
 <div id="app-main" class="hidden">
-    <header>বর্ণমালা কলেজ কন্ট্রোল ড্যাশবোর্ড</header>
+    <header>
+        <span><i class="fas fa-university"></i> বর্ণমালা কলেজ কন্ট্রোল ড্যাশবোর্ড</span>
+        <button onclick="doLogout()" style="background:none; border:none; color:white; font-size:20px; cursor:pointer;"><i class="fas fa-power-off"></i></button>
+    </header>
     
     <div class="container">
-        <!-- ট্যাব ১: রুটিন ভিউ -->
+        <!-- ট্যাব ১: রুটিন -->
         <div id="tab-home" class="tab-page">
-            <div style="display:flex; overflow-x:auto; margin-bottom:10px; background:#fff; padding:10px; border-radius:10px;">
-                <button class="day-btn" id="btn-SUNDAY" onclick="switchDay('SUNDAY', this)">রবি</button>
-                <button class="day-btn" id="btn-MONDAY" onclick="switchDay('MONDAY', this)">সোম</button>
-                <button class="day-btn" id="btn-TUESDAY" onclick="switchDay('TUESDAY', this)">মঙ্গল</button>
-                <button class="day-btn" id="btn-WEDNESDAY" onclick="switchDay('WEDNESDAY', this)">বুধ</button>
-                <button class="day-btn" id="btn-THURSDAY" onclick="switchDay('THURSDAY', this)">বৃহঃ</button>
+            <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <button class="btn btn-p" onclick="toggleRoutine('all')">মাস্টার রুটিন</button>
+                <button class="btn btn-a" onclick="toggleRoutine('mine')">আমার পিরিয়ড</button>
             </div>
-            <div class="table-wrapper">
-                <table>
-                    <thead><tr><th>Class</th><th>1st</th><th>2nd</th><th>3rd</th><th>4th</th><th>5th</th><th>6th</th><th>7th</th><th>8th</th></tr></thead>
-                    <tbody id="master-body"></tbody>
-                </table>
+            <div id="view-master">
+                <div style="display:flex; overflow-x:auto; gap:5px; padding:10px; background:#fff; border-radius:10px; margin-bottom:10px;">
+                    <button id="btn-SUNDAY" class="day-btn" onclick="drawTable('SUNDAY', this)">রবি</button>
+                    <button id="btn-MONDAY" class="day-btn" onclick="drawTable('MONDAY', this)">সোম</button>
+                    <button id="btn-TUESDAY" class="day-btn" onclick="drawTable('TUESDAY', this)">মঙ্গল</button>
+                    <button id="btn-WEDNESDAY" class="day-btn" onclick="drawTable('WEDNESDAY', this)">বুধ</button>
+                    <button id="btn-THURSDAY" class="day-btn" onclick="drawTable('THURSDAY', this)">বৃহঃ</button>
+                </div>
+                <div class="table-wrapper"><table><thead><tr><th rowspan="2">Class</th><th>1st</th><th>2nd</th><th>3rd</th><th>4th</th><th>5th</th><th>6th</th><th>7th</th><th>8th</th></tr><tr style="background:#f5f5f5; font-size:9px"><th>8:35-9:20</th><th>9:20-10:05</th><th>10:05-10:50</th><th>10:50-11:35</th><th>11:35-12:20</th><th>1:00-1:45</th><th>1:45-2:30</th><th>2:30-3:10</th></tr></thead><tbody id="master-body"></tbody></table></div>
+            </div>
+            <div id="view-mine" class="hidden"><div id="mine-alert" style="background:#e8f5e9; color:#2e7d32; padding:15px; border-radius:10px; text-align:center; font-weight:bold; font-size:18px; margin-bottom:15px;"></div><div id="mine-schedule"></div></div>
+        </div>
+
+        <!-- ট্যাব ২: জাদুর কাঠি প্রশ্ন মেকার (Rich Editor) -->
+        <div id="tab-qmaker" class="tab-page hidden">
+            <h3>স্মার্ট প্রশ্ন এডিটর</h3>
+            <div class="card" style="padding: 0; border-radius: 12px; overflow: hidden;">
+                <div class="editor-toolbar">
+                    <button class="toolbar-btn" onclick="execCmd('bold')" title="বোল্ড"><i class="fas fa-bold"></i></button>
+                    <button class="toolbar-btn" onclick="execCmd('italic')" title="ইটালিক"><i class="fas fa-italic"></i></button>
+                    <button class="toolbar-btn" onclick="execCmd('underline')" title="আন্ডারলাইন"><i class="fas fa-underline"></i></button>
+                    <button class="toolbar-btn" onclick="execCmd('justifyLeft')" title="বামে"><i class="fas fa-align-left"></i></button>
+                    <button class="toolbar-btn" onclick="execCmd('justifyCenter')" title="মাঝখানে"><i class="fas fa-align-center"></i></button>
+                    <button class="toolbar-btn" onclick="execCmd('insertUnorderedList')" title="লিস্ট"><i class="fas fa-list-ul"></i></button>
+                    <button class="toolbar-btn" onclick="document.getElementById('file-in').click()" title="স্ক্যান"><i class="fas fa-camera"></i></button>
+                    <button class="toolbar-btn" onclick="showPreview()" style="background:var(--s); color:white;" title="প্রিভিউ"><i class="fas fa-eye"></i></button>
+                    <button class="toolbar-btn" onclick="saveDraft()" style="background:var(--a); color:white;" title="সেভ"><i class="fas fa-save"></i></button>
+                </div>
+                <input type="file" id="file-in" accept="image/*" class="hidden" onchange="initOCR(event)">
+                <div id="q-editor" contenteditable="true" placeholder="এখানে প্রফেশনালভাবে প্রশ্ন সাজান..."></div>
+            </div>
+            <div class="card">
+                <h4>সংরক্ষিত ড্রাফটসমূহ</h4>
+                <div id="draft-list-ui" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(110px, 1fr)); gap:10px;"></div>
             </div>
         </div>
 
-        <!-- ট্যাব ২: রুটিন এডিটর -->
+        <!-- ট্যাব ৩: অ্যাডমিন এডিটর -->
         <div id="tab-admin" class="tab-page hidden">
-            <h3 style="color:var(--p)">রুটিন এডিটর (Global Cloud Sync)</h3>
-            <div id="admin-panel-box" class="card" style="background:#e8eaf6; border:2px solid var(--p);">
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
-                    <select id="edit-day"><option value="SUNDAY">রবিবার</option><option value="MONDAY">সোমবার</option><option value="TUESDAY">মঙ্গলবার</option><option value="WEDNESDAY">বুধবার</option><option value="THURSDAY">বৃহস্পতিবার</option></select>
+            <h3 style="color:var(--p)"><i class="fas fa-user-shield"></i> অ্যাডমিন ড্যাশবোর্ড</h3>
+            <div id="admin-editor-panel" class="card" style="background:#e8eaf6; border:2px solid var(--p);">
+                <h4>রুটিন এডিটর</h4>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
+                    <select id="edit-day"><option value="SUNDAY">রবিবার</option><option value="MONDAY">সোমবার</option><option value="TUESDAY">মঙ্গলবার</option></select>
                     <select id="edit-class"></select>
                 </div>
-                <label>বিভাগ ও শিক্ষক নির্বাচন:</label>
-                <select id="edit-cat" onchange="updateSubDropdown()"><option value="Compulsory">আবশ্যিক</option><option value="Science">বিজ্ঞান</option><option value="Humanities">মানবিক</option><option value="Business">বিজনেস</option><option value="Others">অন্যান্য (BGS/REL/SCI)</option></select>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
-                    <select id="edit-sub" onchange="updateTchrDropdown()"></select>
-                    <select id="edit-tchr"></select>
-                </div>
-                <select id="edit-p-idx"><option value="0">পিরিয়ড ১</option><option value="1">পিরিয়ড ২</option><option value="2">পিরিয়ড ৩</option><option value="3">পিরিয়ড ৪</option><option value="4">পিরিয়ড ৫</option><option value="5">পিরিয়ড ৬</option><option value="6">পিরিয়ড ৭</option><option value="7">পিরিয়ড ৮</option></select>
-                <button class="btn btn-p" style="margin-top:15px" onclick="updateCloudRoutine()">ক্লাউডে আপডেট করুন</button>
+                <label>পিরিয়ড নির্বাচন (সময় স্লটসহ):</label>
+                <select id="edit-p-idx">
+                    <option value="0">১ম (8:35-9:20)</option><option value="1">২য় (9:20-10:05)</option><option value="2">৩য় (10:05-10:50)</option><option value="3">৪র্থ (10:50-11:35)</option><option value="4">৫ম (11:35-12:20)</option><option value="5">৬ষ্ঠ (1:00-1:45)</option><option value="6">৭ম (1:45-2:30)</option><option value="7">৮ম (2:30-3:10)</option>
+                </select>
+                <button class="btn btn-p" onclick="updateRoutineCell()">রুটিন আপডেট</button>
             </div>
+            <div class="card"><div id="shadow-list-ui" style="max-height:300px; overflow-y:auto;"></div></div>
         </div>
     </div>
 
     <nav>
         <div class="nav-item active" onclick="showTab('home')"><i class="fas fa-home"></i>রুটিন</div>
-        <div id="admin-nav" class="nav-item hidden" onclick="showTab('admin')"><i class="fas fa-user-cog"></i>এডিটর</div>
-        <div class="nav-item" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i>লগআউট</div>
+        <div class="nav-item" onclick="showTab('qmaker')"><i class="fas fa-magic"></i>প্রশ্ন এডিটর</div>
+        <div id="admin-nav" class="nav-item hidden" onclick="showTab('admin')"><i class="fas fa-user-cog"></i>অ্যাডমিন</div>
     </nav>
 </div>
 
-<!-- সুপাবেস লাইব্রেরি লোড (শেষে রাখা হয়েছে যাতে লগইন না আটকায়) -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- মোডালসমূহ -->
+<div id="crop-modal"><img id="image-to-crop"><div style="margin-top:20px; display:flex; gap:10px; width:95%;"><button class="btn btn-p" onclick="doOCR()">টেক্সট</button><button class="btn btn-a" onclick="keepImage()">ইমেজ</button><button class="btn btn-w" onclick="document.getElementById('crop-modal').style.display='none'">বাতিল</button></div></div>
+<div id="preview-modal"><div class="paper" id="paper-to-print"><h2 style="text-align:center">বর্ণমালা কলেজ</h2><hr><div id="preview-body"></div></div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; width:90%; margin-top:10px;"><button class="btn btn-p" onclick="downloadPDF()">Download PDF</button><button class="btn btn-w" onclick="document.getElementById('preview-modal').style.display='none'">বন্ধ</button></div></div>
 
 <script>
-    // ১. গ্যারান্টিড লগইন ফাংশন (অবশ্যই সবার আগে)
-    function forceLogin() {
-        const id = document.getElementById('log-id').value;
-        const pw = document.getElementById('log-pw').value;
-        
-        // অ্যাডমিন চেক (সরাসরি কোডে)
-        if(id === "akashmela" && pw === "S@nmania2026") {
-            localStorage.setItem('star_v92_session', 'akashmela');
-            window.location.reload();
-            return;
-        }
+    // পূর্ণাঙ্গ শিক্ষক ও কারিকুলাম ডাটাবেস
+    const ALL_TEACHERS = ["akashmela", "Exam_Admin", "SYFUL", "ARIF", "FORHAD", "ASAD", "MOKTER", "NASRIN", "POLAS", "SHIMUL", "MOZAMMEL", "ALI", "Principal_PS", "FARID", "FAKHRUL", "SOHAYAB", "HOSSAIN", "M.RAHMAN", "TAREK", "NADIM", "MOFAZZAL", "ZIMI", "AKRAM", "ASHRAFUL", "MAHFUZ", "REJAUL", "ZIA", "JUI", "KAFIL", "HASAN", "SAIFUR", "MOROL", "SHAMIM", "KARIM", "Agri_ZIA"];
+    const CLASSES = ["XII-SCI-A", "XII-SCI-B", "XII-SCI-C", "XII-HU", "XII-BS", "XI-SCI-A", "XI-HU", "X-SCI-A", "X-HU", "IX-HU", "IX-BS"];
 
-        // সাধারণ শিক্ষক লগইন
-        if(id !== "" && pw !== "") {
-            localStorage.setItem('star_v92_session', id);
-            window.location.reload();
-        } else {
-            alert("সঠিক আইডি ও পাসওয়ার্ড দিন!");
-        }
-    }
+    let STORE = { routine: { "SUNDAY": [{c:"XII-SCI-A", p:["BAN-MOKTER","ENG-ALI","PHY FAKHRUL","BIO-MOFAZZAL","MATH AKRAM","CHE TAREK","ENG-ALI","ICT-FORHAD"]}] }, drafts: [] };
+    let realUser = ""; let activeUser = ""; let cropper = null;
 
-    // ২. সুপাবেস সেটিংস
-    const SUPABASE_URL = 'https://eskdlglgeeuovugcffszs.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVza2RsZ2xnZWV1dnVnY2Zmc3pzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2Mzg3NjAsImV4cCI6MjA5MzIxNDc2MH0.QUNLFHjgGVdTfKN4JYCf8X9X2wCvbnRkMD6J8zjmIQk';
-    let supabase = null;
-    
-    // ৩. ডাটাবেস এবং মাস্টার ডাটা
-    const MASTER_DATA = { 
-        "Compulsory": {"Bangla":["MOKTER","NASRIN","MOZAMMEL"], "English":["ALI","Principal_PS","FARID"], "ICT":["ARIF","FORHAD","ASAD","REJAUL"]}, 
-        "Science": {"Physics":["FAKHRUL","SOHAYAB","M.RAHMAN"], "Chemistry":["TAREK","NADIM"], "Biology":["MOFAZZAL","ZIMI"], "Math":["AKRAM","REJAUL","MAHFUZ","ASHRAFUL"]},
-        "Humanities": {"Civics":["HASAN","NASRIN"], "Geography":["KAFIL"], "Economics":["FARID"]},
-        "Business": {"Accounting":["JUI"], "Management":["AZIZ"]},
-        "Others": {"BGS":["BGS-HASAN","BGS-NASRIN"], "Religion":["REL-NASRIN","REL-AZIZ","REL-SAIFUR"], "GenSci":["SCI-M.RAHMAN","SCI-REJAUL","SCI-ZIMI"], "ICT_LAB":["ICT-LAB-M.RAHMAN","ARIF"]}
-    };
+    function init() {
+        const local = localStorage.getItem('star_v102_db');
+        if(local) STORE = JSON.parse(local);
+        realUser = localStorage.getItem('star_session');
+        const logSel = document.getElementById('log-id');
+        ALL_TEACHERS.sort().forEach(t => logSel.innerHTML += `<option value="${t}">${t}</option>`);
 
-    const CLASSES = ["XII-SCI-A", "XII-SCI-B", "XII-SCI-C", "XII-HU-B", "XII-BS", "XI-SCI-A", "XI-SCI-B", "XI-SCI-C", "XI-HU", "XI-BS", "X-SCI-A", "X-SCI-B", "X-HU", "X-BS", "IX-SCI-A", "IX-SCI-B", "IX-SCI-C", "IX-HU", "IX-BS"];
-
-    let STORE = { routine: {} };
-
-    // ৪. অ্যাপ ইনিশিয়ালাইজেশন
-    function checkSession() {
-        const user = localStorage.getItem('star_v92_session');
-        if(user) {
-            document.getElementById('auth-section').style.display = 'none';
+        if(!realUser) document.getElementById('auth-section').classList.remove('hidden');
+        else {
+            activeUser = realUser;
+            document.getElementById('auth-section').classList.add('hidden');
             document.getElementById('app-main').classList.remove('hidden');
-            
-            if(["akashmela", "Civics_HASAN", "Math_MAHFUZ", "HASAN", "MAHFUZ"].includes(user)) {
-                document.getElementById('admin-nav').classList.remove('hidden');
-                setupAdmin();
-            }
-            startCloudSync();
+            if(realUser === "akashmela") { document.getElementById('admin-nav').classList.remove('hidden'); setupAdmin(); }
+            drawTable('SUNDAY', document.getElementById('btn-SUNDAY'));
+            renderDraftList();
         }
     }
 
-    async function startCloudSync() {
-        if(window.supabase) {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            const { data, error } = await supabase.from('routine_master').select('*');
-            if(!error) {
-                data.forEach(row => STORE.routine[row.day_name] = row.full_routine);
-                switchDay('SUNDAY', document.getElementById('btn-SUNDAY'));
-            }
-        }
+    // ম্যাজিক এডিটর ফাংশন (document.execCommand)
+    function execCmd(cmd) { document.execCommand(cmd, false, null); }
+
+    function saveDraft() {
+        const name = prompt("ফাইলের নাম দিন:"); if(!name) return;
+        STORE.drafts.unshift({ id: Date.now(), name, content: document.getElementById('q-editor').innerHTML, teacher: activeUser });
+        saveDB(); renderDraftList(); alert("ড্রাফট সংরক্ষিত।");
     }
 
-    async function updateCloudRoutine() {
-        const d = document.getElementById('edit-day').value;
-        const c = document.getElementById('edit-class').value;
-        const pIdx = document.getElementById('edit-p-idx').value;
-        const val = document.getElementById('edit-tchr').value;
-        
-        if(!STORE.routine[d]) STORE.routine[d] = CLASSES.map(cls => ({c:cls, p:["-","-","-","-","-","-","-","-"]}));
-        STORE.routine[d].find(r => r.c === c).p[pIdx] = val;
-        
-        if(supabase) {
-            await supabase.from('routine_master').upsert({ day_name: d, full_routine: STORE.routine[d] });
-            alert("সফলভাবে আপডেট হয়েছে!"); switchDay(d);
-        }
-    }
-
-    function switchDay(day, btn) {
-        if(btn) { document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active-day')); btn.classList.add('active-day'); }
-        const body = document.getElementById('master-body'); body.innerHTML = "";
-        (STORE.routine[day] || []).forEach(row => {
-            let tr = `<tr><td style="font-weight:bold; background:#f1f3f4">${row.c}</td>`;
-            row.p.forEach(p => tr += `<td class="${p.includes('ICT') || p.includes('LAB') ?'lab':''}">${p}</td>`);
-            body.innerHTML += tr + `</tr>`;
+    function renderDraftList() {
+        const ui = document.getElementById('draft-list-ui'); ui.innerHTML = "";
+        STORE.drafts.filter(d => d.teacher === activeUser).forEach(d => {
+            ui.innerHTML += `<div class="draft-item" onclick="loadDraftByID(${d.id})"><i class="fas fa-folder-open"></i><span>${d.name}</span></div>`;
         });
     }
 
-    function setupAdmin() {
-        const clsSel = document.getElementById('edit-class');
-        CLASSES.forEach(c => clsSel.innerHTML += `<option value="${c}">${c}</option>`);
-        updateSubDropdown();
-    }
+    function loadDraftByID(id) { document.getElementById('q-editor').innerHTML = STORE.drafts.find(x=>x.id==id).content; alert("ফাইল লোড হয়েছে।"); }
 
-    function updateSubDropdown() {
-        const cat = document.getElementById('edit-cat').value;
-        const subS = document.getElementById('edit-sub'); subS.innerHTML = "";
-        Object.keys(MASTER_DATA[cat]).forEach(s => subS.innerHTML += `<option>${s}</option>`);
-        updateTchrDropdown();
-    }
+    function downloadPDF() { html2pdf().from(document.getElementById('paper-to-print')).set({margin: 0.5, filename: 'Barnamala_Question.pdf', html2canvas: {scale: 2, useCORS: true}}).save(); }
 
-    function updateTchrDropdown() {
-        const cat = document.getElementById('edit-cat').value; const sub = document.getElementById('edit-sub').value;
-        const tSel = document.getElementById('edit-tchr'); tSel.innerHTML = "";
-        (MASTER_DATA[cat][sub] || []).forEach(t => tSel.innerHTML += `<option value="${sub}_${t}">${sub}_${t}</option>`);
-    }
-
+    // সাধারণ অ্যাপ ফাংশনসমূহ
+    function handleLogin() { const id = document.getElementById('log-id').value; const pw = document.getElementById('log-pw').value; if(id === "akashmela" && pw === "S@nmania2026") { localStorage.setItem('star_session', id); location.reload(); } else if(id && pw) { localStorage.setItem('star_session', id); location.reload(); } }
+    function drawTable(day, btn) { if(btn) { document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active-day')); btn.classList.add('active-day'); } const body = document.getElementById('master-body'); body.innerHTML = ""; (STORE.routine[day] || []).forEach(row => { let tr = `<tr><td style="font-weight:bold; background:#f1f3f4">${row.c}</td>`; row.p.forEach(p => tr += `<td class="${p.includes('ICT')?'lab':''}">${p}</td>`); body.innerHTML += tr + `</tr>`; }); updateMineStatus(day); }
+    function updateMineStatus(day) { const search = activeUser.split('_')[1] || activeUser; const mine = (STORE.routine[day] || []).filter(r => r.p.some(p => p.includes(search))); document.getElementById('mine-alert').innerText = mine.length > 0 ? `আজ আপনার ${mine.length}টি ক্লাস আছে।` : "আজ আপনার কোনো ক্লাস নেই।"; const list = document.getElementById('mine-schedule'); list.innerHTML = ""; mine.forEach(c => list.innerHTML += `<div class="card" style="border-left:8px solid var(--p)"><b>${c.c}</b></div>`); }
     function showTab(t) { document.querySelectorAll('.tab-page').forEach(p => p.classList.add('hidden')); document.getElementById('tab-' + t).classList.remove('hidden'); document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active')); }
-    function doLogout() { localStorage.removeItem('star_v92_session'); window.location.reload(); }
+    function setupAdmin() { const clsSel = document.getElementById('edit-class'); CLASSES.forEach(c => clsSel.innerHTML += `<option value="${c}">${c}</option>`); const shadowList = document.getElementById('shadow-list-ui'); ALL_TEACHERS.sort().forEach(t => shadowList.innerHTML += `<div class="user-row" onclick="enterShadow('${t}')">${t}</div>`); }
+    function initOCR(e) { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = (ev) => { document.getElementById('image-to-crop').src = ev.target.result; document.getElementById('crop-modal').style.display = "flex"; if(cropper) cropper.destroy(); cropper = new Cropper(document.getElementById('image-to-crop'), { viewMode: 1 }); }; reader.readAsDataURL(file); }
+    async function doOCR() { const canvas = cropper.getCroppedCanvas(); document.getElementById('crop-modal').style.display = "none"; alert("এআই প্রসেসিং..."); const res = await Tesseract.recognize(canvas, 'eng+ben'); document.getElementById('q-editor').focus(); document.execCommand('insertHTML', false, res.data.text.replace(/\n/g,"<br>")); }
+    function keepImage() { const img = `<br><img src="${cropper.getCroppedCanvas().toDataURL('image/jpeg', 0.6)}"><br>`; document.getElementById('q-editor').focus(); document.execCommand('insertHTML', false, img); document.getElementById('crop-modal').style.display = "none"; }
+    function showPreview() { document.getElementById('preview-modal').style.display = "flex"; document.getElementById('preview-body').innerHTML = document.getElementById('q-editor').innerHTML; }
+    function saveDB() { localStorage.setItem('star_v102_db', JSON.stringify(STORE)); }
+    function doLogout() { localStorage.removeItem('star_session'); location.reload(); }
+    function toggleRoutine(v) { document.getElementById('view-master').classList.toggle('hidden', v!=='all'); document.getElementById('view-mine').classList.toggle('hidden', v!=='mine'); }
+    function enterShadow(n) { activeUser = n; document.getElementById('shadow-banner').classList.remove('hidden'); document.getElementById('shadow-name').innerText = n; renderDraftList(); showTab('home'); }
+    function exitShadow() { activeUser = realUser; document.getElementById('shadow-banner').classList.add('hidden'); renderDraftList(); }
 
-    // রান অ্যাপ
-    checkSession();
+    window.onload = init;
 </script>
 </body>
 </html>
